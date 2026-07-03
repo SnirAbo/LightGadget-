@@ -8,15 +8,11 @@ const authRouter = require('./controllers/authController');
 const uploadRouter = require('./controllers/uploadController');
 
 const app = express();
-const PORT = 3000;
-
+const PORT = process.env.PORT || 3000;
 connectDB();
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(cors());
+
 app.use(express.json());
 
 app.use('/users', usersRouter);
