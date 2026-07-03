@@ -49,7 +49,7 @@ const HomeScreen = () => {
           mode="contained"
           onPress={() => addToCart(item)}
           disabled={item.quantity === 0}
-          buttonColor="#3B82F6"
+          buttonColor="#FF6B00"
           style={styles.cartButton}
         >
           הוסף לעגלה
@@ -65,9 +65,9 @@ const HomeScreen = () => {
         value={search}
         onChangeText={setSearch}
         style={styles.searchbar}
-        placeholderTextColor="#94A3B8"
-        inputStyle={{ color: '#F8FAFC' }}
-        iconColor="#94A3B8"
+        placeholderTextColor="#6B7280"
+        inputStyle={{ color: '#1A1A1A' }}
+        iconColor="#6B7280"
       />
       <FlatList
         horizontal
@@ -76,7 +76,7 @@ const HomeScreen = () => {
         renderItem={({ item }) => (
           <Chip
             style={[styles.categoryChip, selectedCategory === item.name && styles.selectedChip]}
-            textStyle={{ color: '#F8FAFC' }}
+            textStyle={{ color: selectedCategory === item.name ? '#FFFFFF' : '#1A1A1A' }}
             onPress={() => setSelectedCategory(item.name)}
           >
             {item.name === 'All' ? 'הכל' : item.name}
@@ -97,18 +97,18 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A' },
-  searchbar: { margin: 12, backgroundColor: '#1E293B' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  searchbar: { margin: 12, backgroundColor: '#F8F9FA', elevation: 0, borderWidth: 1, borderColor: '#E5E7EB' },
   categoryList: { paddingHorizontal: 12, marginBottom: 8, flexGrow: 0 },
-  categoryChip: { marginRight: 8, backgroundColor: '#1E293B' },
-  selectedChip: { backgroundColor: '#3B82F6' },
+  categoryChip: { marginRight: 8, backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#E5E7EB' },
+  selectedChip: { backgroundColor: '#FF6B00', borderColor: '#FF6B00' },
   grid: { paddingHorizontal: 8, paddingBottom: 16 },
-  card: { flex: 1, margin: 6, backgroundColor: '#1E293B' },
+  card: { flex: 1, margin: 6, backgroundColor: '#F8F9FA', elevation: 1 },
   cover: { height: 130 },
   cardContent: { paddingVertical: 8 },
-  productTitle: { color: '#F8FAFC', fontWeight: 'bold' },
-  category: { color: '#94A3B8', marginTop: 2 },
-  price: { color: '#F59E0B', marginTop: 4, fontWeight: 'bold' },
+  productTitle: { color: '#1A1A1A', fontWeight: 'bold' },
+  category: { color: '#6B7280', marginTop: 2 },
+  price: { color: '#FF6B00', marginTop: 4, fontWeight: 'bold' },
   chip: { marginTop: 6, alignSelf: 'flex-start' },
   cartButton: { flex: 1 },
 });

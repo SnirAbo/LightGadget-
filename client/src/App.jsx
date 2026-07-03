@@ -12,6 +12,7 @@ import CustomerPage from "./componetns/Customer/CustomerPage"
 import MyAccount from "./componetns/Customer/MyAccount"
 import MyOrders from "./componetns/Customer/MyOrders"
 import ProductCatalog from "./componetns/Customer/ProductCatalog"
+import PaymentPage from "./componetns/Customer/PaymentPage"
 import HomePage from "./pages/HomePage"
 
 import { useDispatch } from 'react-redux';
@@ -50,6 +51,7 @@ function App() {
         <Route path='orders' element={<MyOrders />} />
         <Route path='products' element= {<ProductCatalog />} />
       </Route>
+      <Route path='/payment' element={<PaymentPage />} />
     </Route>
 
     </Routes>

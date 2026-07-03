@@ -32,9 +32,9 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={setUserName}
         style={styles.input}
         mode="outlined"
-        textColor="#F8FAFC"
-        outlineColor="#334155"
-        activeOutlineColor="#3B82F6"
+        textColor="#1A1A1A"
+        outlineColor="#E5E7EB"
+        activeOutlineColor="#FF6B00"
       />
       <TextInput
         label="סיסמה"
@@ -43,14 +43,14 @@ const LoginScreen = ({ navigation }) => {
         secureTextEntry
         style={styles.input}
         mode="outlined"
-        textColor="#F8FAFC"
-        outlineColor="#334155"
-        activeOutlineColor="#3B82F6"
+        textColor="#1A1A1A"
+        outlineColor="#E5E7EB"
+        activeOutlineColor="#FF6B00"
       />
-      <Button mode="contained" onPress={handleLogin} style={styles.button} buttonColor="#3B82F6">
+      <Button mode="contained" onPress={handleLogin} style={styles.button} buttonColor="#FF6B00">
         כניסה
       </Button>
-      <Button mode="text" onPress={() => navigation.navigate('Register')} textColor="#3B82F6">
+      <Button mode="text" onPress={() => navigation.navigate('Register')} textColor="#FF6B00">
         משתמש חדש? הירשם
       </Button>
     </View>
@@ -58,9 +58,9 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A', justifyContent: 'center', padding: 24 },
-  title: { color: '#F8FAFC', textAlign: 'center', marginBottom: 32, fontWeight: 'bold' },
-  input: { marginBottom: 16, backgroundColor: '#1E293B' },
+  container: { flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', padding: 24 },
+  title: { color: '#1A1A1A', textAlign: 'center', marginBottom: 32, fontWeight: 'bold' },
+  input: { marginBottom: 16, backgroundColor: '#F8F9FA' },
   button: { marginTop: 8, marginBottom: 8 },
 });
 

@@ -81,9 +81,9 @@ const AdminScreen = () => {
 
   const inputProps = {
     mode: 'outlined',
-    textColor: '#F8FAFC',
-    outlineColor: '#334155',
-    activeOutlineColor: '#3B82F6',
+    textColor: '#1A1A1A',
+    outlineColor: '#E5E7EB',
+    activeOutlineColor: '#FF6B00',
     dense: true,
     style: styles.input,
   };
@@ -96,8 +96,8 @@ const AdminScreen = () => {
         <Button
           mode={tab === 'categories' ? 'contained' : 'outlined'}
           onPress={() => setTab('categories')}
-          buttonColor={tab === 'categories' ? '#3B82F6' : undefined}
-          textColor={tab === 'categories' ? '#fff' : '#3B82F6'}
+          buttonColor={tab === 'categories' ? '#FF6B00' : undefined}
+          textColor={tab === 'categories' ? '#fff' : '#FF6B00'}
           style={styles.tabBtn}
         >
           קטגוריות
@@ -105,8 +105,8 @@ const AdminScreen = () => {
         <Button
           mode={tab === 'products' ? 'contained' : 'outlined'}
           onPress={() => setTab('products')}
-          buttonColor={tab === 'products' ? '#3B82F6' : undefined}
-          textColor={tab === 'products' ? '#fff' : '#3B82F6'}
+          buttonColor={tab === 'products' ? '#FF6B00' : undefined}
+          textColor={tab === 'products' ? '#fff' : '#FF6B00'}
           style={styles.tabBtn}
         >
           מוצרים
@@ -121,11 +121,11 @@ const AdminScreen = () => {
               value={newCatName}
               onChangeText={setNewCatName}
               mode="outlined"
-              textColor="#F8FAFC"
-              outlineColor="#334155"
-              activeOutlineColor="#3B82F6"
+              textColor="#1A1A1A"
+              outlineColor="#E5E7EB"
+              activeOutlineColor="#FF6B00"
               dense
-              style={[styles.addInput, { backgroundColor: '#1E293B' }]}
+              style={[styles.addInput, { backgroundColor: '#F8F9FA' }]}
             />
             <Button mode="contained" onPress={addCategory} buttonColor="#22C55E" style={styles.addBtn}>
               הוסף
@@ -184,18 +184,18 @@ const AdminScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A', padding: 12 },
-  heading: { color: '#F8FAFC', fontWeight: 'bold', marginBottom: 12, textAlign: 'center' },
+  container: { flex: 1, backgroundColor: '#FFFFFF', padding: 12 },
+  heading: { color: '#1A1A1A', fontWeight: 'bold', marginBottom: 12, textAlign: 'center' },
   tabs: { flexDirection: 'row', marginBottom: 12, gap: 8 },
   tabBtn: { flex: 1 },
   addRow: { flexDirection: 'row', marginBottom: 12, alignItems: 'center', gap: 8 },
   addInput: { flex: 1 },
   addBtn: { marginTop: 4 },
-  card: { marginBottom: 8, backgroundColor: '#1E293B' },
+  card: { marginBottom: 8, backgroundColor: '#F8F9FA', elevation: 1 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  itemText: { color: '#F8FAFC', fontWeight: 'bold' },
-  detail: { color: '#94A3B8', marginTop: 2 },
-  input: { marginBottom: 8, backgroundColor: '#1E293B' },
+  itemText: { color: '#1A1A1A', fontWeight: 'bold' },
+  detail: { color: '#6B7280', marginTop: 2 },
+  input: { marginBottom: 8, backgroundColor: '#F8F9FA' },
 });
 
 export default AdminScreen;

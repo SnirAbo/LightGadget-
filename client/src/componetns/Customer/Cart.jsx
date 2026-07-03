@@ -2,10 +2,9 @@ import { Box, Typography, IconButton, Divider, Button } from "@mui/material";
 import { Card, CardContent, Stack, TextField} from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import { useDispatch , useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api';
 import { useLanguage } from '../../LanguageContext';
 
 
@@ -20,27 +19,15 @@ const Cart = () => {
 
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
-  }
+  };
 
-
-  const handleAllOrders = async () => {
+  const handleOrder = () => {
     if (cart.length === 0) return;
     if (!user) {
       navigate('/login');
       return;
     }
-
-    for (const product of cart) {
-      const boughtByEntry = {
-        name: `${user.firstName} ${user.lastName}`,
-        date: { seconds: Math.floor(Date.now() / 1000), nanoseconds: 0 },
-        quantity: product.quantity,
-      };
-      await api.put(`/products/${product.id}/push-bought`, boughtByEntry);
-    }
-
-    alert(t('orderPlaced'));
-    dispatch({ type: 'CLEAR_CART' });
+    navigate('/payment');
   };
 
 
@@ -69,16 +56,20 @@ const Cart = () => {
       </IconButton>
 
       {open && cart.map((product) => (
-    <Card key={product.id}>
+    <Card key={product._id}>
         <CardContent>
         <Stack direction="row" spacing={2} alignItems="center">
-
-      <Stack spacing={1}>
-        <Typography variant="h6">{product.title}</Typography>
-        <Typography>{t('inStock')} {product.quantity}</Typography>
-        <Typography>{t('price')} ₪{product.quantity * product.price}</Typography>
-
-      </Stack>
+          <Box
+            component="img"
+            src={product.pic || 'https://placehold.co/60x60?text=?'}
+            alt={product.title}
+            sx={{ width: 60, height: 60, borderRadius: 2, objectFit: 'cover', flexShrink: 0 }}
+          />
+          <Stack spacing={0.5}>
+            <Typography variant="h6">{product.title}</Typography>
+            <Typography variant="body2" color="text.secondary">{t('inStock')} {product.quantity}</Typography>
+            <Typography variant="body2" fontWeight="bold" color="#FF6B00">₪{product.quantity * product.price}</Typography>
+          </Stack>
      </Stack>
         </CardContent>
         <Divider />
@@ -89,7 +80,7 @@ const Cart = () => {
          <Typography variant="subtitle1"> {t('total')} ₪{cart.reduce((sum, item) => sum + item.price * item.quantity, 0)} </Typography>
          <Typography variant="subtitle2"> {t('items')} {cart.reduce((sum, item) => sum + item.quantity, 0)} </Typography>
          <Stack>
-            <Button onClick={() => handleAllOrders()} variant="contained" color="success" sx={{ mt: 1 }}>
+            <Button onClick={handleOrder} variant="contained" color="success" sx={{ mt: 1 }}>
               {t('order')}
             </Button>
             <Button onClick={()=> clearCart()} variant="contained"  sx={{ mt: 1 , backgroundColor: 'grey'}}>{t('clearCart')}</Button>
@@ -97,8 +88,6 @@ const Cart = () => {
           </Box>
         )}
     </Box>
-
-
   );
 };
 

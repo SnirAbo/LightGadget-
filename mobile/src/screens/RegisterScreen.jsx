@@ -24,9 +24,9 @@ const RegisterScreen = ({ navigation }) => {
 
   const inputProps = {
     mode: 'outlined',
-    textColor: '#F8FAFC',
-    outlineColor: '#334155',
-    activeOutlineColor: '#3B82F6',
+    textColor: '#1A1A1A',
+    outlineColor: '#E5E7EB',
+    activeOutlineColor: '#FF6B00',
     style: styles.input,
   };
 
@@ -37,10 +37,10 @@ const RegisterScreen = ({ navigation }) => {
       <TextInput label="שם משפחה" value={form.lastName} onChangeText={set('lastName')} {...inputProps} />
       <TextInput label="שם משתמש" value={form.userName} onChangeText={set('userName')} {...inputProps} />
       <TextInput label="סיסמה" value={form.password} onChangeText={set('password')} secureTextEntry {...inputProps} />
-      <Button mode="contained" onPress={handleRegister} style={styles.button} buttonColor="#3B82F6">
+      <Button mode="contained" onPress={handleRegister} style={styles.button} buttonColor="#FF6B00">
         הרשמה
       </Button>
-      <Button mode="text" onPress={() => navigation.navigate('Login')} textColor="#3B82F6">
+      <Button mode="text" onPress={() => navigation.navigate('Login')} textColor="#FF6B00">
         כבר יש לך חשבון? התחבר
       </Button>
     </View>
@@ -48,9 +48,9 @@ const RegisterScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A', justifyContent: 'center', padding: 24 },
-  title: { color: '#F8FAFC', textAlign: 'center', marginBottom: 32, fontWeight: 'bold' },
-  input: { marginBottom: 16, backgroundColor: '#1E293B' },
+  container: { flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', padding: 24 },
+  title: { color: '#1A1A1A', textAlign: 'center', marginBottom: 32, fontWeight: 'bold' },
+  input: { marginBottom: 16, backgroundColor: '#F8F9FA' },
   button: { marginTop: 8, marginBottom: 8 },
 });
 

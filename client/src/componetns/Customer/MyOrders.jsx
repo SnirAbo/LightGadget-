@@ -35,10 +35,11 @@ return (
         </TableHead>
         <TableBody>
             {products.map((product) => {
-                const myPurchases = product.boughtBy.filter(user => user.name === `${currentUser.firstName} ${currentUser.lastName}`.toLowerCase());
-                return myPurchases.map(order => (
+                const fullName = `${currentUser.firstName} ${currentUser.lastName}`.toLowerCase();
+                const myPurchases = product.boughtBy.filter(u => u.name?.toLowerCase() === fullName);
+                return myPurchases.map((order, idx) => (
 
-                    <TableRow key={product.id}
+                    <TableRow key={`${product._id}-${idx}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
 

@@ -40,10 +40,10 @@ const AccountScreen = ({ navigation }) => {
       <View style={styles.notLoggedIn}>
         <Text variant="headlineSmall" style={styles.heading}>ברוך הבא!</Text>
         <Text style={styles.subText}>התחבר כדי לגשת לחשבון שלך</Text>
-        <Button mode="contained" onPress={() => navigation.navigate('Login')} buttonColor="#3B82F6" style={styles.btn}>
+        <Button mode="contained" onPress={() => navigation.navigate('Login')} buttonColor="#FF6B00" style={styles.btn}>
           כניסה
         </Button>
-        <Button mode="outlined" onPress={() => navigation.navigate('Register')} textColor="#3B82F6" style={styles.btn}>
+        <Button mode="outlined" onPress={() => navigation.navigate('Register')} textColor="#FF6B00" style={styles.btn}>
           הרשמה
         </Button>
       </View>
@@ -52,9 +52,9 @@ const AccountScreen = ({ navigation }) => {
 
   const inputProps = {
     mode: 'outlined',
-    textColor: '#F8FAFC',
-    outlineColor: '#334155',
-    activeOutlineColor: '#3B82F6',
+    textColor: '#1A1A1A',
+    outlineColor: '#E5E7EB',
+    activeOutlineColor: '#FF6B00',
     style: styles.input,
   };
 
@@ -67,7 +67,7 @@ const AccountScreen = ({ navigation }) => {
       <TextInput label="שם משפחה" value={form.lastName} onChangeText={set('lastName')} {...inputProps} />
       <TextInput label="שם משתמש" value={form.userName} onChangeText={set('userName')} {...inputProps} />
       <TextInput label="סיסמה חדשה" value={form.password} onChangeText={set('password')} secureTextEntry {...inputProps} />
-      <Button mode="contained" onPress={handleSave} buttonColor="#3B82F6" style={styles.btn}>
+      <Button mode="contained" onPress={handleSave} buttonColor="#FF6B00" style={styles.btn}>
         שמור
       </Button>
       <Button mode="outlined" onPress={handleLogout} textColor="#EF4444" style={styles.btn}>
@@ -78,11 +78,11 @@ const AccountScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A', padding: 24 },
-  notLoggedIn: { flex: 1, backgroundColor: '#0F172A', justifyContent: 'center', alignItems: 'center', padding: 24 },
-  heading: { color: '#F8FAFC', fontWeight: 'bold', marginBottom: 24, textAlign: 'center' },
-  subText: { color: '#94A3B8', marginBottom: 24, textAlign: 'center' },
-  input: { marginBottom: 16, backgroundColor: '#1E293B' },
+  container: { flex: 1, backgroundColor: '#FFFFFF', padding: 24 },
+  notLoggedIn: { flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  heading: { color: '#1A1A1A', fontWeight: 'bold', marginBottom: 24, textAlign: 'center' },
+  subText: { color: '#6B7280', marginBottom: 24, textAlign: 'center' },
+  input: { marginBottom: 16, backgroundColor: '#F8F9FA' },
   btn: { marginBottom: 12 },
 });
 

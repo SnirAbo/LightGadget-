@@ -12,13 +12,14 @@ import CartScreen from '../screens/CartScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import AccountScreen from '../screens/AccountScreen';
 import AdminScreen from '../screens/AdminScreen';
+import PaymentScreen from '../screens/PaymentScreen';
 
 const RootStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const DARK_HEADER = {
-  headerStyle: { backgroundColor: '#1E293B' },
-  headerTintColor: '#F8FAFC',
+const LIGHT_HEADER = {
+  headerStyle: { backgroundColor: '#FFFFFF' },
+  headerTintColor: '#1A1A1A',
   headerTitleStyle: { fontWeight: 'bold' },
 };
 
@@ -33,10 +34,10 @@ function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#3B82F6',
-        tabBarInactiveTintColor: '#64748B',
-        tabBarStyle: { backgroundColor: '#1E293B', borderTopColor: '#334155' },
-        ...DARK_HEADER,
+        tabBarActiveTintColor: '#FF6B00',
+        tabBarInactiveTintColor: '#6B7280',
+        tabBarStyle: { backgroundColor: '#FFFFFF', borderTopColor: '#E5E7EB', borderTopWidth: 1 },
+        ...LIGHT_HEADER,
       }}
     >
       <Tab.Screen
@@ -77,10 +78,11 @@ function MainTabs() {
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-      <RootStack.Navigator screenOptions={DARK_HEADER}>
+      <RootStack.Navigator screenOptions={LIGHT_HEADER}>
         <RootStack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
         <RootStack.Screen name="Login" component={LoginScreen} options={{ title: 'כניסה' }} />
         <RootStack.Screen name="Register" component={RegisterScreen} options={{ title: 'הרשמה' }} />
+        <RootStack.Screen name="Payment" component={PaymentScreen} options={{ title: 'תשלום' }} />
       </RootStack.Navigator>
     </NavigationContainer>
   );
