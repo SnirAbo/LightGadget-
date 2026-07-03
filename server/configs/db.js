@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-
+require('dotenv').config(); 
 const connectDB = () => {
   // Connect to MongoDB database
   mongoose
-    .connect(`mongodb://127.0.0.1:27017/gadgetlightDB`)
+    .connect(process.env.MONGO_URI)
     .then(() => console.log('Connected to gadgetlightDB'))
     .catch((error) => console.log(error));
 };
