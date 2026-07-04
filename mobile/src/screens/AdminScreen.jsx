@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, Alert, ScrollView } from 'react-native';
-import { Text, Button, TextInput, Card } from 'react-native-paper';
+import { Text, Button, TextInput, Card, Menu } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/api';
 
@@ -10,15 +10,17 @@ const AdminScreen = () => {
   const products = useSelector((state) => state.product.products);
   const [tab, setTab] = useState('categories');
   const [newCatName, setNewCatName] = useState('');
+  const [categoryMenuVisible, setCategoryMenuVisible] = useState(false);
   const [newProduct, setNewProduct] = useState({
     title: '',
-    price: '',
-    quantity: '',
+    price: 0,
+    quantity: 0,
     category: '',
     description: '',
     pic: '',
   });
 
+ 
   const fetchCategories = () =>
     api.get('/categories').then((res) => dispatch({ type: 'LOAD_CATEGORY', payload: res.data }));
   const fetchProducts = () =>
@@ -156,7 +158,29 @@ const AdminScreen = () => {
               <TextInput label="שם" value={newProduct.title} onChangeText={setField('title')} {...inputProps} />
               <TextInput label="מחיר" value={newProduct.price} onChangeText={setField('price')} keyboardType="numeric" {...inputProps} />
               <TextInput label="כמות" value={newProduct.quantity} onChangeText={setField('quantity')} keyboardType="numeric" {...inputProps} />
-              <TextInput label="קטגוריה" value={newProduct.category} onChangeText={setField('category')} {...inputProps} />
+              <Menu
+                visible={categoryMenuVisible}
+                onDismiss={() => setCategoryMenuVisible(false)}
+                anchor={
+                  <Button
+                    mode="outlined"
+                    onPress={() => setCategoryMenuVisible(true)}
+                    style={styles.categoryBtn}
+                    contentStyle={styles.categoryBtnContent}
+                    labelStyle={[styles.categoryBtnLabel, newProduct.category ? { color: '#1A1A1A' } : { color: '#9CA3AF' }]}
+                  >
+                    {newProduct.category || 'בחר קטגוריה'}
+                  </Button>
+                }
+              >
+                {categories.map((cat) => (
+                  <Menu.Item
+                    key={cat._id}
+                    onPress={() => { setField('category')(cat.name); setCategoryMenuVisible(false); }}
+                    title={cat.name}
+                  />
+                ))}
+              </Menu>
               <TextInput label="תיאור" value={newProduct.description} onChangeText={setField('description')} {...inputProps} />
               <TextInput label="תמונה (URL)" value={newProduct.pic} onChangeText={setField('pic')} {...inputProps} />
               <Button mode="contained" onPress={addProduct} buttonColor="#22C55E">
@@ -196,6 +220,9 @@ const styles = StyleSheet.create({
   itemText: { color: '#1A1A1A', fontWeight: 'bold' },
   detail: { color: '#6B7280', marginTop: 2 },
   input: { marginBottom: 8, backgroundColor: '#F8F9FA' },
+  categoryBtn: { marginBottom: 8, borderColor: '#E5E7EB', borderRadius: 4, justifyContent: 'flex-start' },
+  categoryBtnContent: { justifyContent: 'flex-start' },
+  categoryBtnLabel: { fontSize: 14 },
 });
 
 export default AdminScreen;
