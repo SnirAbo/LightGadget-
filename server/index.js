@@ -6,6 +6,7 @@ const productsRouter = require('./controllers/productController');
 const categoriesRouter = require('./controllers/categoryController');
 const authRouter = require('./controllers/authController');
 const uploadRouter = require('./controllers/uploadController');
+const orderRouter = require('./controllers/orderController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,13 +18,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json());
+app.use(express.json(
+));
 
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
 app.use('/categories', categoriesRouter);
 app.use('/auth', authRouter);
 app.use('/upload', uploadRouter);
+app.use('/orders', orderRouter);
 
 app.get('/', (req, res) => {
   res.send('LightGadget server is running');

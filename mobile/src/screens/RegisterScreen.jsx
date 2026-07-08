@@ -4,12 +4,12 @@ import { TextInput, Button, Text } from 'react-native-paper';
 import api from '../api/api';
 
 const RegisterScreen = ({ navigation }) => {
-  const [form, setForm] = useState({ firstName: '', lastName: '', userName: '', password: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', userName: '', password: '' });
 
   const set = (field) => (val) => setForm((prev) => ({ ...prev, [field]: val }));
 
   const handleRegister = async () => {
-    if (!form.firstName || !form.lastName || !form.userName || !form.password) {
+    if (!form.firstName || !form.lastName || !form.email || !form.userName || !form.password) {
       Alert.alert('שגיאה', 'אנא מלא את כל השדות');
       return;
     }
@@ -35,6 +35,7 @@ const RegisterScreen = ({ navigation }) => {
       <Text variant="headlineMedium" style={styles.title}>הרשמה</Text>
       <TextInput label="שם פרטי" value={form.firstName} onChangeText={set('firstName')} {...inputProps} />
       <TextInput label="שם משפחה" value={form.lastName} onChangeText={set('lastName')} {...inputProps} />
+      <TextInput label="אימייל" value={form.email} onChangeText={set('email')} keyboardType="email-address" {...inputProps} />
       <TextInput label="שם משתמש" value={form.userName} onChangeText={set('userName')} {...inputProps} />
       <TextInput label="סיסמה" value={form.password} onChangeText={set('password')} secureTextEntry {...inputProps} />
       <Button mode="contained" onPress={handleRegister} style={styles.button} buttonColor="#FF6B00">

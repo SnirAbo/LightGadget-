@@ -9,9 +9,9 @@ const SECRET_KEY = process.env.JWT_SECRET;
 
 // POST /auth/login
 router.post('/login', async (req, res) => {
-  const { userName, password } = req.body;
+  const { email, password } = req.body;
   try {
-    const user = await Auth.login(userName);
+    const user = await Auth.login(email);
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }

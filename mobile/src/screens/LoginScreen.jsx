@@ -7,12 +7,12 @@ import api from '../api/api';
 
 const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
-      const response = await api.post('/auth/login', { userName, password });
+      const response = await api.post('/auth/login', { email, password });
       const { token, user } = response.data;
       await SecureStore.setItemAsync('token', token);
       await SecureStore.setItemAsync('user', JSON.stringify(user));
@@ -27,9 +27,9 @@ const LoginScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text variant="headlineMedium" style={styles.title}>GadgetLight</Text>
       <TextInput
-        label="שם משתמש"
-        value={userName}
-        onChangeText={setUserName}
+        label="אימייל"
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
         mode="outlined"
         textColor="#1A1A1A"

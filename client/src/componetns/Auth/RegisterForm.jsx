@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { TextField, Button, Grid, Container, Typography, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { useDispatch } from 'react-redux';
 import { useLanguage } from '../../LanguageContext';
 
+
+
 const RegisterFormComp = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     userName: '',
+    email: '',
     password: '',
     role: 'user',
   });
@@ -25,11 +29,14 @@ const RegisterFormComp = () => {
 
   const handleSubmit =  async (e) => {
     e.preventDefault();
+    try {
     dispatch({ type: 'ADD_USER', payload: formData });
     await api.post('/auth/register', formData);
     alert(t('userRegistered', formData.userName));
-    console.log(formData);
-
+    navigate('/login');
+    } catch (error) {
+      alert(error.response?.data?.message || t('registrationError'));
+    }
   };
 
   return (
@@ -64,6 +71,16 @@ const RegisterFormComp = () => {
           <TextField
             label={t('lastName')}
             name="lastName"
+            onChange={handleChange}
+            variant="outlined"
+            sx={{ width: '250px' }}
+          />
+        </Grid>
+
+         <Grid item>
+          <TextField
+            label={t('email')}
+            name="email"
             onChange={handleChange}
             variant="outlined"
             sx={{ width: '250px' }}

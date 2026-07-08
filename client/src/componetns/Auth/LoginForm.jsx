@@ -11,7 +11,7 @@ const LoginFormComp = () => {
     const dispatch = useDispatch();
     const { t } = useLanguage();
     const [loginData, setloginData] = useState({
-        userName: '',
+        email: '',
         password: ''
       });
 
@@ -61,8 +61,9 @@ return (
 
         <Grid item>
           <TextField
-            label={t('username')}
-            name="userName"
+            label={t('email')}
+            name="email"
+            type='email'
             onChange={handleChange}
             variant="outlined"
             fullWidth
