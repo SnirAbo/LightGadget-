@@ -5,6 +5,7 @@ import CategoryManager from "./componetns/Admin/CategoryManager"
 import CustomerManager from "./componetns/Admin/CustomerManager"
 import ProductManager from "./componetns/Admin/ProductManager"
 import StatisticsDashboard from "./componetns/Admin/StatisticsDashboard"
+import OrderManager from "./componetns/Admin/OrderManager"
 import ProtectedRoute from "./componetns/Auth/ProtectedRoute"
 import AdminPage from "./componetns/Admin/AdminPage"
 
@@ -42,6 +43,7 @@ function App() {
         <Route path='product' element={<ProductManager />} />
         <Route path='category' element= {<CategoryManager />} />
         <Route path='statistics' element={<StatisticsDashboard />} />
+        <Route path='orders' element={<OrderManager />} />
       </Route>
     </Route>
 

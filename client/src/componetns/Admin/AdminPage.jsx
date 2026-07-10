@@ -20,6 +20,7 @@ return (
         <Button component={Link} to="product">{t('products')}</Button>
         <Button component={Link} to="customer">{t('customers')}</Button>
         <Button component={Link} to="statistics">{t('statistics')}</Button>
+        <Button component={Link} to="orders">הזמנות</Button>
         <Button onClick={toggleLang} variant="outlined" size="small">{t('langToggle')}</Button>
       </Stack>
 

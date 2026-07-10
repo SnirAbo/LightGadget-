@@ -1,6 +1,6 @@
 const Order = require('../models/orderModel');
 
-const getAllOrders = () => Order.find();
+const getAllOrders = () => Order.find().populate('user', 'firstName lastName email');
 const getById = (id) => Order.findById(id);
 const getByUser = (user) => Order.find({ user });
 const addOrder = (obj) => new Order(obj).save();
