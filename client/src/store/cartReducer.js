@@ -8,7 +8,7 @@ const initialState = {
         return {
           ...state,
           cart: state.cart.map(item =>
-            item.id === action.payload
+            item._id === action.payload
               ? { ...item, quantity: item.quantity + 1 }
               : item
           ),
@@ -18,7 +18,7 @@ const initialState = {
         return {
           ...state,
           cart: state.cart.map(item =>
-            item.id === action.payload && item.quantity > 1
+            item._id === action.payload && item.quantity > 1
               ? { ...item, quantity: item.quantity - 1 }
               : item
           ),
@@ -27,22 +27,19 @@ const initialState = {
         return {
           ...state,
           cart: state.cart.map(item =>
-            item.id === action.payload.id
+            item._id === action.payload.id
               ? { ...item, quantity: action.payload.quantity }
               : item
           ),
         };
 
-                case 'LOAD_CATEGORY':
-        return { ...state, categories: action.payload };
-        
         case 'ADD_TO_CART': {
-          const existingItem = state.cart.find(item => item.id === action.payload.id);
+          const existingItem = state.cart.find(item => item._id === action.payload._id);
           if (existingItem) {
             return {
               ...state,
               cart: state.cart.map(item =>
-                item.id === action.payload.id
+                item._id === action.payload._id
                   ? { ...item, quantity: item.quantity + 1 }
                   : item
               )
@@ -58,7 +55,7 @@ const initialState = {
          case 'REMOVE_FROM_CART':
             return {
               ...state,
-              cart: state.cart.filter(item => item.id !== action.payload.id),
+              cart: state.cart.filter(item => item._id !== action.payload._id),
             };
 
        case 'CLEAR_CART':

@@ -1,8 +1,9 @@
-import { Box, Typography, Button, Divider, Stack, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Typography, Button, Divider, Stack, TextField, ToggleButton, ToggleButtonGroup, Grid } from "@mui/material";
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../api';
+import { useLanguage } from '../../LanguageContext';
 
 const SHIPPING_FREE = 'free';
 const SHIPPING_PAID = 'paid';
@@ -12,9 +13,16 @@ const PaymentPage = () => {
   const cart = useSelector((state) => state.cart.cart);
   const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
-  const [city, setCity] = useState('');
+  const [address, setAddress] = useState({
+    address: '',
+    city: '',
+    postalCode: '',
+    phoneNumber: '',
+
+  });
   const [shippingOption, setShippingOption] = useState(SHIPPING_FREE);
 
   const itemsTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -29,24 +37,50 @@ const PaymentPage = () => {
   if (!user || cart.length === 0) return null;
 
   const completeOrder = async () => {
-    for (const product of cart) {
-      await api.put(`/products/${product._id}/push-bought`, {
-        name: `${user.firstName} ${user.lastName}`,
-        date: { seconds: Math.floor(Date.now() / 1000), nanoseconds: 0 },
-        quantity: product.quantity,
-      });
-    }
-    dispatch({ type: 'CLEAR_CART' });
+    await api.post('/orders', {
+      user: user._id,
+      items: cart.map((product) => ({
+      product: product._id,
+      title: product.title,
+      price: product.price,
+     quantity: product.quantity,
+     })),
+    ...address,      
+    shippingCost,
+    totalPrice: grandTotal,
+    });
   };
+
+  const handleAddressChange = (e) => {
+  setAddress((prev) => ({
+    ...prev,
+    [e.target.name]: e.target.value,
+  }));
+};
+
+// const handleAddressSubmit = async (e) => {
+//   e.preventDefault();
+//   if (!address.city || !address.address || !address.postalCode || !address.phoneNumber) {
+//     alert('אנא מלא את כל השדות');
+//     return;
+//   }
+//   await completeOrder();
+//   alert('הזמנה הושלמה בהצלחה!');
+//   navigate('/account/orders');
+// }
 
   const buildWaText = () => {
     const itemLines = cart.map(p => `${p.title} × ${p.quantity} = ₪${p.price * p.quantity}`).join('\n');
     const shippingLine = shippingCost > 0 ? `\nמשלוח: ₪${shippingCost}` : '\nמשלוח: חינם';
-    const cityLine = city ? `\nעיר: ${city}` : '';
+    const cityLine = address.city ? `\nעיר: ${address.city}` : '';
     return `🛒 הזמנה חדשה!\nשם: ${user.firstName} ${user.lastName}${cityLine}\nפריטים:\n${itemLines}${shippingLine}\nסה״כ: ₪${grandTotal}\nאנא אשר את ההזמנה 🙏`;
   };
 
   const handleBit = async () => {
+     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+    alert('אנא מלא את כל פרטי המשלוח');
+    return;
+     }
     await completeOrder();
     window.open(`https://pay.bit.co.il/pay?phoneNumber=0538280217&amount=${grandTotal}`, '_blank');
     window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
@@ -54,6 +88,10 @@ const PaymentPage = () => {
   };
 
   const handlePayLater = async () => {
+     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+    alert('אנא מלא את כל פרטי המשלוח');
+    return;
+    }
     await completeOrder();
     window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
     navigate('/account/orders');
@@ -91,17 +129,63 @@ const PaymentPage = () => {
         </Box>
 
         {/* Shipping section */}
+
+
         <Box sx={{ backgroundColor: '#F8F9FA', borderRadius: 3, p: 2, mb: 3 }}>
           <Typography fontWeight="bold" mb={1.5}>פרטי משלוח</Typography>
-          <TextField
-            label="עיר למשלוח"
-            placeholder="הזן עיר למשלוח"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            size="small"
-            fullWidth
-            sx={{ mb: 2 }}
-          />
+{/* <form onSubmit={handleAddressSubmit}> */}
+  <Grid
+    container
+    direction="column"
+    justifyContent="center"
+    alignItems="center"
+    spacing={3}
+  >
+    <Grid item>
+      <TextField
+        label={t('address')}
+        name="address"
+        value={address.address}
+        onChange={handleAddressChange}
+        variant="outlined"
+        sx={{ width: '250px' }}
+      />
+    </Grid>
+
+    <Grid item>
+      <TextField
+        label={t('city')}
+        name="city"
+        value={address.city}
+        onChange={handleAddressChange}
+        variant="outlined"
+        sx={{ width: '250px' }}
+      />
+    </Grid>
+
+    <Grid item>
+      <TextField
+        label={t('postalCode')}
+        name="postalCode"
+        value={address.postalCode}
+        onChange={handleAddressChange}
+        variant="outlined"
+        sx={{ width: '250px' }}
+      />
+    </Grid>
+
+    <Grid item>
+      <TextField
+        label={t('phoneNumber')}
+        name="phoneNumber"
+        value={address.phoneNumber}
+        onChange={handleAddressChange}
+        variant="outlined"
+        sx={{ width: '250px' }}
+      />
+    </Grid>
+  </Grid>
+  {/* </form> */}
           <ToggleButtonGroup
             value={shippingOption}
             exclusive

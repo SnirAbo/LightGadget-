@@ -89,8 +89,16 @@ const translations = {
     uploadError: 'Error uploading image',
     productDeleted: 'Product deleted successfully',
     errorDeletingProduct: 'Error deleting product',
+    phoneNumber: 'Phone Number',
+    address: 'Address',
+    city: 'City',
+    postalCode: 'Postal Code',
   },
   he: {
+    address: 'כתובת',
+    city: 'עיר',
+    postalCode: 'מיקוד',
+    phoneNumber: 'מספר טלפון',
     appTitle: 'חנות דור הבא',
     username: 'שם משתמש',
     password: 'סיסמה',
@@ -180,6 +188,7 @@ const translations = {
     uploadError: 'שגיאה בהעלאת התמונה',
     productDeleted: 'המוצר נמחק בהצלחה',
     errorDeletingProduct: 'שגיאה במחיקת המוצר',
+
   },
 };
 
