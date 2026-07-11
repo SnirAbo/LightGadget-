@@ -1,0 +1,1 @@
+Before any UI work, read DESIGN.md and follow it strictly. Use sx, never style.

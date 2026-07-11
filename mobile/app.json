@@ -12,6 +12,14 @@
         {
           "photosPermission": "האפליקציה צריכה גישה לתמונות כדי להעלות תמונות מוצרים"
         }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-custom.png",
+          "backgroundColor": "#FFFFFF",
+          "imageWidth": 300
+        }
       ]
     ],
     "ios": {
@@ -19,10 +27,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF"
       },
       "package": "com.snirabo.lightgadget"
     },
