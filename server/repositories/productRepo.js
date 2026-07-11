@@ -5,7 +5,5 @@ const getById = (id) => Product.findById(id);
 const addProduct = (obj) => new Product(obj).save();
 const updateProduct = (id, obj) => Product.findByIdAndUpdate(id, { $set: obj }, { new: true });
 const deleteProduct = (id) => Product.findByIdAndDelete(id);
-const pushBoughtBy = (id, entry) =>
-  Product.findByIdAndUpdate(id, { $push: { boughtBy: entry } }, { new: true });
 
-module.exports = { getAllProducts, getById, addProduct, updateProduct, deleteProduct, pushBoughtBy };
+module.exports = { getAllProducts, getById, addProduct, updateProduct, deleteProduct };

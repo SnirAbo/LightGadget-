@@ -11,13 +11,21 @@ const PaymentScreen = ({ navigation }) => {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const completeOrder = async () => {
-    for (const item of cart) {
-      await api.put(`/products/${item._id}/push-bought`, {
-        name: `${currentUser.firstName} ${currentUser.lastName}`,
-        date: { seconds: Math.floor(Date.now() / 1000), nanoseconds: 0 },
+    await api.post('/orders', {
+      user: currentUser._id,
+      items: cart.map((item) => ({
+        product: item._id,
+        title: item.title,
+        price: item.price,
         quantity: item.quantity,
-      });
-    }
+      })),
+      address: '',
+      city: '',
+      postalCode: '',
+      phoneNumber: '',
+      shippingCost: 0,
+      totalPrice: total,
+    });
     const itemLines = cart.map(i => `${i.title} × ${i.quantity} = ₪${i.price * i.quantity}`).join('\n');
     const waText = `🛒 הזמנה חדשה!\nשם: ${currentUser.firstName} ${currentUser.lastName}\nפריטים:\n${itemLines}\nסה״כ: ₪${total}\nאנא אשר את ההזמנה 🙏`;
     await Linking.openURL(`https://wa.me/972538280217?text=${encodeURIComponent(waText)}`);

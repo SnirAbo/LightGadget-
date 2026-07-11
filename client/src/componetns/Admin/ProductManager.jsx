@@ -17,7 +17,6 @@ const ProductManagerComp = () => {
             description: '',
             price: 0,
             pic: '',
-            boughtBy: [],
         });
 
 
@@ -211,31 +210,6 @@ return (
                  />
             </Box>
 
-<TableContainer sx={{ maxWidth:450 }} component={Paper}>
-      <Table  size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('nameCol')}</TableCell>
-            <TableCell align="right">{t('qtySmall')}</TableCell>
-            <TableCell align="right">{t('dateSmall')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {product.boughtBy.map((user, index) => (
-            <TableRow
-              key={index}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {user.name}
-              </TableCell>
-              <TableCell align="right">{user.quantity}</TableCell>
-              <TableCell align="right">{new Date(user.date.seconds * 1000).toLocaleDateString()}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
     <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
       <Button
               size="small"

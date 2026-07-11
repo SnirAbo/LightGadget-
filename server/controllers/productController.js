@@ -39,16 +39,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Cart.jsx calls this to append a purchase entry to boughtBy
-router.put('/:id/push-bought', async (req, res) => {
-  try {
-    const result = await productService.pushBoughtBy(req.params.id, req.body);
-    res.json(result);
-  } catch (error) {
-    res.status(500).json(error.message);
-  }
-});
-
 router.delete('/:id', async (req, res) => {
   try {
     const result = await productService.deleteProduct(req.params.id);
