@@ -1,128 +1,98 @@
 import { PieChart } from '@mui/x-charts/PieChart';
-import { useState ,useEffect } from 'react';
+import { BarChart } from '@mui/x-charts/BarChart';
+import { useState, useEffect } from 'react';
 import api from '../../api';
-import { useDispatch , useSelector } from 'react-redux';
 import { Box, Typography, Select, MenuItem, Divider } from '@mui/material';
 import { useLanguage } from '../../LanguageContext';
-import { ChartContainer } from '@mui/x-charts/ChartContainer';
-import { BarPlot } from '@mui/x-charts/BarChart';
-import { BarChart } from '@mui/x-charts/BarChart';
-
 
 const StatisticsDashboardComp = () => {
-    const [selectedUser, setSelectedUser] = useState('');
-    const [userChartData, setUserChartData] = useState({
-      labels: [],
-      values: [],
-    });
-      const dispatch = useDispatch();
-      const { t } = useLanguage();
-      const users = useSelector((state) => state.user.users);
-      const products = useSelector((state) => state.product.products);
-      const pieData = products.map((product) =>{
-        const userData = product.boughtBy.reduce((sum, user) =>{
-          return sum + user.quantity;
-        }, 0)
-        return {
-          id: product.id,
-          label: product.title,
-          value: userData
-        }
-      })
+  const { t } = useLanguage();
+  const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState('');
 
-      useEffect(() => {
-        if (!selectedUser) return;
-      
-        const labels = [];
-        const values = [];
-      
-        products.map((product) => {
-          const userOrders = (product.boughtBy || []).filter(
-            (entry) => entry.name.toLowerCase() === selectedUser.toLowerCase()
-          );
-      
-          if (userOrders.length > 0) {
-            const totalQuantity = userOrders.reduce((sum, entry) => sum + entry.quantity, 0);
-            labels.push(product.title);
-            values.push(totalQuantity);
-          }
-        });
+  useEffect(() => {
+    api.get('/users').then((res) => setUsers(res.data)).catch(() => {});
+    api.get('/orders').then((res) => setOrders(res.data)).catch(() => {});
+  }, []);
 
-        const sorted = labels.map((label, i) => ({
-          label,
-          value: values[i]
-        })).sort((a, b) => a.value - b.value);
-        
-        const sortedLabels = sorted.map(item => item.label);
-        const sortedValues = sorted.map(item => item.value);
-      
-        setUserChartData({ labels: sortedLabels, values: sortedValues });
-      }, [selectedUser, products]);
-      
-      
-      
-      
-      useEffect(() => {
-        api.get('/users').then((res) => {
-          dispatch({ type: 'LOAD_USERS', payload: res.data });
-        });
-      }, []);
+  // PieChart: total qty sold per product title across all orders
+  const productTotals = orders
+    .flatMap((o) => o.items ?? [])
+    .reduce((acc, item) => {
+      acc[item.title] = (acc[item.title] ?? 0) + item.quantity;
+      return acc;
+    }, {});
 
-      useEffect(() => {
-        api.get('/products').then((res) => {
-          dispatch({ type: 'LOAD_PRODUCT', payload: res.data });
-        });
-      }, []);
+  const pieData = Object.entries(productTotals)
+    .filter(([, qty]) => qty > 0)
+    .map(([title, qty], i) => ({ id: i, label: title, value: qty }));
 
-return (
+  // BarChart: items bought by the selected user
+  const userOrders = selectedUserId
+    ? orders.filter((o) => (o.user?._id ?? o.user) === selectedUserId)
+    : [];
+
+  const userItemTotals = userOrders
+    .flatMap((o) => o.items ?? [])
+    .reduce((acc, item) => {
+      acc[item.title] = (acc[item.title] ?? 0) + item.quantity;
+      return acc;
+    }, {});
+
+  const barEntries = Object.entries(userItemTotals).sort((a, b) => a[1] - b[1]);
+  const barLabels = barEntries.map(([title]) => title);
+  const barValues = barEntries.map(([, qty]) => qty);
+
+  return (
     <>
-    <Box sx={{padding: 2, margin: 'auto' ,backgroundColor:'lightgrey', maxWidth: 500,}}>
-    <Typography sx={{textAlign: 'center', margin: 'auto'}}>{t('totalSoldProducts')}</Typography>
-    <Box sx={{ border:"1px solid white", maxWidth: 400, margin: 'auto' }}>
-    <PieChart
-      series={[
-        {
-          data: pieData,
-        },
-      ]}
-      width={200}
-      height={200}
-    />
-    </Box>
-    </Box>
-    <Divider/>
-    <Box sx={{padding: 2, margin: 'auto' ,backgroundColor:'lightgrey', maxWidth: 500,}}>
-      <Select 
-      value={selectedUser}
-      onChange={(e) => setSelectedUser(e.target.value)}
-      displayEmpty
-      sx={{ height: 25 }}>
-         <MenuItem value="">
-          {t('selectUser')}
-          </MenuItem>
-      {users.map((user) => (
-          <MenuItem key={user.id} value={`${user.firstName} ${user.lastName}`}>
-            {user.firstName} {user.lastName}
-          </MenuItem>
-      ))}
-      </Select>
+      <Box sx={{ padding: 2, margin: 'auto', backgroundColor: 'lightgrey', maxWidth: 500 }}>
+        <Typography sx={{ textAlign: 'center', margin: 'auto' }}>{t('totalSoldProducts')}</Typography>
+        <Box sx={{ border: '1px solid white', maxWidth: 400, margin: 'auto' }}>
+          {pieData.length > 0 ? (
+            <PieChart
+              series={[{ data: pieData }]}
+              width={400}
+              height={200}
+            />
+          ) : (
+            <Typography sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>אין נתונים</Typography>
+          )}
+        </Box>
+      </Box>
 
-       <BarChart
-         series={[{
-         type: 'bar',
-         data: userChartData.values,
-          label: t('qtyLabel'),
-         valueFormatter: (v, i) => `${v} ${userChartData.labels[i]}`,
-        }]}
-       xAxis={[{
-       data: userChartData.labels,
-         scaleType: 'band',
-          }]}
-       width={500}
-       height={300} />
-    </Box>
+      <Divider />
+
+      <Box sx={{ padding: 2, margin: 'auto', backgroundColor: 'lightgrey', maxWidth: 500 }}>
+        <Select
+          value={selectedUserId}
+          onChange={(e) => setSelectedUserId(e.target.value)}
+          displayEmpty
+          sx={{ height: 25, mb: 2 }}
+        >
+          <MenuItem value="">{t('selectUser')}</MenuItem>
+          {users.map((user) => (
+            <MenuItem key={user._id} value={user._id}>
+              {user.firstName} {user.lastName}
+            </MenuItem>
+          ))}
+        </Select>
+
+        {selectedUserId && (
+          <BarChart
+            series={[{
+              type: 'bar',
+              data: barValues,
+              label: t('qtyLabel'),
+            }]}
+            xAxis={[{ data: barLabels, scaleType: 'band' }]}
+            width={500}
+            height={300}
+          />
+        )}
+      </Box>
     </>
- );
-}
+  );
+};
 
 export default StatisticsDashboardComp;

@@ -26,6 +26,7 @@ const ProductCatalogComp = () => {
   };
 
   useEffect(() => {
+    
     api.get('/products').then((res) => {
       dispatch({ type: 'LOAD_PRODUCT', payload: res.data });
     });
@@ -69,7 +70,7 @@ const ProductCatalogComp = () => {
             >
               <MenuItem value="All">{t('all')}</MenuItem>
               {categories.map((category) => (
-                <MenuItem key={category.id} value={category.name}>
+                <MenuItem key={category._id} value={category.name}>
                   {category.name}
                 </MenuItem>
               ))}
