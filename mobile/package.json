@@ -9,6 +9,7 @@
     "@react-navigation/stack": "^7.10.6",
     "axios": "^1.18.1",
     "expo": "~56.0.12",
+    "expo-image-picker": "~56.0.20",
     "expo-secure-store": "^56.0.4",
     "expo-status-bar": "~56.0.4",
     "expo-updates": "~56.0.19",

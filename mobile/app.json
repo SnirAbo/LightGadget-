@@ -1,11 +1,19 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "LightGadget",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "האפליקציה צריכה גישה לתמונות כדי להעלות תמונות מוצרים"
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +24,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.goofykenny.mobile"
+      "package": "com.snirabo.lightgadget"
     },
     "web": {
       "favicon": "./assets/favicon.png"
