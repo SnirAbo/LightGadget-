@@ -1,27 +1,46 @@
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
+import { useMemo } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.jsx';
 
 import { BrowserRouter } from 'react-router-dom';
 import { legacy_createStore as createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
 
 import reducer from './store/rootReducer.js';
-import { LanguageProvider } from './LanguageContext';
-import theme from './theme.js';
+import { LanguageProvider, useLanguage } from './LanguageContext';
+import createAppTheme from './theme.js';
+
+const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [rtlPlugin] });
+const cacheLtr = createCache({ key: 'muiltr' });
 
 const store = createStore(reducer);
 
+const ThemedApp = () => {
+  const { lang } = useLanguage();
+  const isRtl = lang === 'he';
+  const theme = useMemo(() => createAppTheme(isRtl ? 'rtl' : 'ltr'), [isRtl]);
+
+  return (
+    <CacheProvider value={isRtl ? cacheRtl : cacheLtr}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </CacheProvider>
+  );
+};
+
 createRoot(document.getElementById('root')).render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <LanguageProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <App />
-          </ThemeProvider>
-        </LanguageProvider>
-      </BrowserRouter>
-    </Provider>
-)
+  <Provider store={store}>
+    <BrowserRouter>
+      <LanguageProvider>
+        <ThemedApp />
+      </LanguageProvider>
+    </BrowserRouter>
+  </Provider>
+);

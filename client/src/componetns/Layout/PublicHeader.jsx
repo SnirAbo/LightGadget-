@@ -1,5 +1,10 @@
-import { AppBar, Toolbar, Typography, Button, Box, Badge, IconButton } from '@mui/material';
+import { useState } from 'react';
+import {
+  AppBar, Toolbar, Typography, Button, Box, Badge,
+  IconButton, Menu, MenuItem, Divider,
+} from '@mui/material';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLanguage } from '../../LanguageContext';
@@ -9,13 +14,16 @@ const PublicHeader = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const { t, toggleLang } = useLanguage();
+  const { t, toggleLang, lang } = useLanguage();
   const currentUser = useSelector((state) => state.user.currentUser);
   const cartCount = useSelector((state) =>
     state.cart.cart.reduce((sum, item) => sum + item.quantity, 0)
   );
-
   const { setCartOpen } = useCartDrawer();
+  const [menuAnchor, setMenuAnchor] = useState(null);
+
+  const handleMenuOpen = (e) => setMenuAnchor(e.currentTarget);
+  const handleMenuClose = () => setMenuAnchor(null);
 
   const handleLogout = () => {
     dispatch({ type: 'LOGOUT_USER' });
@@ -41,6 +49,10 @@ const PublicHeader = () => {
     }),
   });
 
+  // anchorOrigin/transformOrigin are physical props — not flipped by stylis-plugin-rtl.
+  // In RTL the hamburger lands on the left edge, so the menu must open leftward.
+  const menuEdge = lang === 'he' ? 'left' : 'right';
+
   return (
     <AppBar
       position="sticky"
@@ -60,52 +72,112 @@ const PublicHeader = () => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <IconButton onClick={() => setCartOpen((v) => !v)} sx={{ me: 1, color: 'text.primary' }}>
+        {/* Desktop nav — hidden on mobile */}
+        <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 }}>
+          {currentUser ? (
+            <>
+              <Typography variant="body2" sx={{ me: 1, color: 'text.secondary' }}>
+                {t('hello')} {currentUser.firstName}
+              </Typography>
+              <Button component={Link} to="/account/myaccount" size="small" sx={navSx('/account/myaccount')}>
+                {t('myAccount')}
+              </Button>
+              <Button component={Link} to="/account/orders" size="small" sx={navSx('/account/orders')}>
+                {t('orders')}
+              </Button>
+              {currentUser.role === 'admin' && (
+                <Button
+                  component={Link}
+                  to="/admin"
+                  size="small"
+                  variant="outlined"
+                  sx={{ ...navSx('/admin'), borderColor: 'primary.main', color: 'primary.main' }}
+                >
+                  {t('adminPanel')}
+                </Button>
+              )}
+              <Button onClick={handleLogout} size="small" sx={{ color: 'text.primary' }}>
+                {t('logOut')}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button component={Link} to="/login" variant="outlined" size="small" sx={navSx('/login')}>
+                {t('login')}
+              </Button>
+              <Button component={Link} to="/register" variant="contained" size="small">
+                {t('register')}
+              </Button>
+            </>
+          )}
+        </Box>
+
+        {/* Cart — always visible */}
+        <IconButton
+          onClick={() => setCartOpen((v) => !v)}
+          sx={{ ms: 1, color: 'text.primary' }}
+          aria-label={t('items')}
+        >
           <Badge badgeContent={cartCount} color="primary">
             <ShoppingCartOutlinedIcon />
           </Badge>
         </IconButton>
 
-        {currentUser ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ me: 1, color: 'text.secondary' }}>
-              שלום {currentUser.firstName}
-            </Typography>
-            <Button component={Link} to="/account/myaccount" size="small" sx={navSx('/account/myaccount')}>
-              {t('myAccount')}
-            </Button>
-            <Button component={Link} to="/account/orders" size="small" sx={navSx('/account/orders')}>
-              {t('orders')}
-            </Button>
-            {currentUser.role === 'admin' && (
-              <Button
-                component={Link}
-                to="/admin"
-                size="small"
-                variant="outlined"
-                sx={{ ...navSx('/admin'), borderColor: 'primary.main', color: 'primary.main' }}
-              >
-                {t('adminPanel')}
-              </Button>
-            )}
-            <Button onClick={handleLogout} size="small" sx={{ color: 'text.primary' }}>
-              {t('logOut')}
-            </Button>
-          </Box>
-        ) : (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button component={Link} to="/login" variant="outlined" size="small" sx={navSx('/login')}>
-              {t('login')}
-            </Button>
-            <Button component={Link} to="/register" variant="contained" size="small">
-              {t('register')}
-            </Button>
-          </Box>
-        )}
-
+        {/* Language toggle — always visible */}
         <Button onClick={toggleLang} size="small" sx={{ ms: 1, color: 'text.secondary' }}>
           {t('langToggle')}
         </Button>
+
+        {/* Hamburger — mobile only (xs); hidden at sm+ */}
+        <IconButton
+          onClick={handleMenuOpen}
+          sx={{ display: { xs: 'flex', sm: 'none' }, ms: 1, color: 'text.primary' }}
+          aria-label={t('navigationMenu')}
+          aria-controls={menuAnchor ? 'nav-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={menuAnchor ? 'true' : undefined}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        {/* Hamburger dropdown — menuEdge keeps it inward in both LTR and RTL */}
+        <Menu
+          id="nav-menu"
+          anchorEl={menuAnchor}
+          open={Boolean(menuAnchor)}
+          onClose={handleMenuClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: menuEdge }}
+          transformOrigin={{ vertical: 'top', horizontal: menuEdge }}
+        >
+          {currentUser ? [
+            <MenuItem key="greeting" disabled>
+              <Typography variant="body2">{t('hello')} {currentUser.firstName}</Typography>
+            </MenuItem>,
+            <Divider key="d1" />,
+            <MenuItem key="account" component={Link} to="/account/myaccount" onClick={handleMenuClose}>
+              {t('myAccount')}
+            </MenuItem>,
+            <MenuItem key="orders" component={Link} to="/account/orders" onClick={handleMenuClose}>
+              {t('orders')}
+            </MenuItem>,
+            ...(currentUser.role === 'admin' ? [
+              <MenuItem key="admin" component={Link} to="/admin" onClick={handleMenuClose}>
+                {t('adminPanel')}
+              </MenuItem>,
+            ] : []),
+            <Divider key="d2" />,
+            <MenuItem key="logout" onClick={() => { handleLogout(); handleMenuClose(); }}>
+              {t('logOut')}
+            </MenuItem>,
+          ] : [
+            <MenuItem key="login" component={Link} to="/login" onClick={handleMenuClose}>
+              {t('login')}
+            </MenuItem>,
+            <MenuItem key="register" component={Link} to="/register" onClick={handleMenuClose}>
+              {t('register')}
+            </MenuItem>,
+          ]}
+        </Menu>
       </Toolbar>
     </AppBar>
   );

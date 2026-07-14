@@ -1,7 +1,8 @@
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
-  direction: 'rtl',
+export default function createAppTheme(direction) {
+  return createTheme({
+    direction,
   palette: {
     mode: 'light',
     primary:   { main: '#FF6B00', dark: '#E05A00', light: '#FFF3EB', contrastText: '#FFFFFF' },
@@ -28,6 +29,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: { borderRadius: 8, paddingInline: 24, paddingBlock: 12 },
+        sizeSmall: { minHeight: 44 },
         contained: {
           position: 'relative',
           overflow: 'hidden',
@@ -64,10 +66,14 @@ const theme = createTheme({
         },
       },
     },
+    MuiIconButton: {
+      styleOverrides: {
+        root: { minHeight: 44, minWidth: 44 },
+      },
+    },
     MuiTextField: {
       defaultProps: { variant: 'outlined', size: 'small' },
     },
   },
-});
-
-export default theme;
+  });
+}

@@ -138,7 +138,7 @@ const ProductCatalogComp = () => {
                 InputProps={{ sx: { height: 32, maxWidth: 120 } }}
                 placeholder="..."
               />
-              <Button onClick={clearFilters} size="small" variant="outlined" sx={{ height: 32 }}>
+              <Button onClick={clearFilters} size="small" variant="outlined">
                 {t('clear')}
               </Button>
             </Stack>

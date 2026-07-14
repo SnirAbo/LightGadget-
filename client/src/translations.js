@@ -104,6 +104,7 @@ const translations = {
     errorLoadingOrders: "We couldn't load your orders. Check your connection and try again.",
     errorSubmittingOrder: 'Order submission failed. Check your connection and press the payment button again.',
     fillShippingDetails: 'Please fill in all shipping details before completing the payment.',
+    navigationMenu: 'Navigation menu',
   },
   he: {
     address: 'כתובת',
@@ -210,6 +211,7 @@ const translations = {
     errorLoadingOrders: 'לא הצלחנו לטעון את ההזמנות. בדוק את החיבור ונסה שוב.',
     errorSubmittingOrder: 'שליחת ההזמנה נכשלה. בדוק את החיבור ולחץ שוב על כפתור התשלום.',
     fillShippingDetails: 'יש למלא את כל פרטי המשלוח לפני ביצוע התשלום.',
+    navigationMenu: 'תפריט ניווט',
   },
 };
 
