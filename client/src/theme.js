@@ -28,6 +28,26 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: { borderRadius: 8, paddingInline: 24, paddingBlock: 12 },
+        contained: {
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: '-60%',
+            width: '40%',
+            height: '100%',
+            transform: 'skewX(-15deg)',
+            background: 'linear-gradient(90deg, transparent, rgba(255,214,10,.45), transparent)',
+            transition: 'left .4s ease',
+            pointerEvents: 'none',
+          },
+          '&:hover::before': { left: '120%' },
+          '@media (prefers-reduced-motion: reduce)': {
+            '&::before': { display: 'none' },
+          },
+        },
       },
     },
     MuiCard: {

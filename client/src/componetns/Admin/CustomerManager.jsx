@@ -18,7 +18,7 @@ const CustomerManagerComp = () => {
     orders.filter((o) => (o.user?._id ?? o.user) === userId);
 
   return (
-    <Box sx={{ mt: 2, p: 2, backgroundColor: '#f0f0f0', borderRadius: 2, maxWidth: 800, margin: 'auto', padding: 3 }}>
+    <Box sx={{ mt: 2, p: 2, maxWidth: 800, margin: 'auto', padding: 3 }}>
       <Typography sx={{ mt: 1, mb: 2 }} variant="h4" fontWeight="bold">
         {t('customersTitle')}
       </Typography>

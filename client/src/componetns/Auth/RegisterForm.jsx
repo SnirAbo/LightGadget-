@@ -40,10 +40,18 @@ const RegisterFormComp = () => {
   };
 
   return (
-    <Container maxWidth="sm" >
-  <Box sx={{ mt: 4 }}>
+    <Container maxWidth="sm" sx={{
+  bgcolor: 'background.paper',
+  border: '1px solid',
+  borderColor: 'divider',
+  borderRadius: '16px',
+  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+  p: 4,
+  mt: 4,
+}}>
+  <Box>
   <Grid container justifyContent="center">
-      <Grid item>
+      <Grid>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           {t('register')}
         </Typography>
@@ -57,7 +65,7 @@ const RegisterFormComp = () => {
         alignItems="center"
         spacing={3}
       >
-        <Grid item>
+        <Grid>
           <TextField
             label={t('firstName')}
             name="firstName"
@@ -67,7 +75,7 @@ const RegisterFormComp = () => {
           />
         </Grid>
 
-        <Grid item>
+        <Grid>
           <TextField
             label={t('lastName')}
             name="lastName"
@@ -77,7 +85,7 @@ const RegisterFormComp = () => {
           />
         </Grid>
 
-         <Grid item>
+         <Grid>
           <TextField
             label={t('email')}
             name="email"
@@ -87,7 +95,7 @@ const RegisterFormComp = () => {
           />
         </Grid>
 
-        <Grid item>
+        <Grid>
           <TextField
             label={t('username')}
             name="userName"
@@ -97,7 +105,7 @@ const RegisterFormComp = () => {
           />
         </Grid>
 
-        <Grid item>
+        <Grid>
           <TextField
             label={t('password')}
             name="password"
@@ -108,7 +116,7 @@ const RegisterFormComp = () => {
           />
         </Grid>
 
-        <Grid item>
+        <Grid>
           <Box display="flex" justifyContent="center">
             <Button
               type="submit"
@@ -119,7 +127,7 @@ const RegisterFormComp = () => {
             </Button>
           </Box>
         </Grid>
-        <Grid item>
+        <Grid>
           <Box display="flex" justifyContent="center">
             {t('alreadyHaveAccount')} <Link to="/login">{t('loginLink')}</Link>
           </Box>

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { TextField, Button, Grid, Container, Checkbox , Typography, Box } from '@mui/material';
+import { TextField, Button, Grid, Checkbox, Typography, Box } from '@mui/material';
 import api from '../../api';
 import { useLanguage } from '../../LanguageContext';
+import SectionTitle from '../SectionTitle';
 
 const MyAccountComp = () => {
     const loggedUser = JSON.parse(sessionStorage.getItem('user'));
@@ -19,89 +20,77 @@ const MyAccountComp = () => {
         console.log({activeUser});
         await api.put(`/users/${loggedUser._id}`, { ...activeUser });
         alert(t('userUpdated'));
-
     }
 
     const handleChange = (e) => {
         setActiveUser((prevFormData) => ({
           ...prevFormData,
-          [e.target.name]: e.target.value,  // Dynamically update the corresponding field in formData
+          [e.target.name]: e.target.value,
         }));
     }
 
-
-return (
-    <>
-    <Box sx={{  pt:2, mt:1,  maxWidth: 300, margin: 'auto', padding: 3, backgroundColor: '#b2b2b2', borderRadius: 2, }}>
-     <Box component="form" onSubmit={handleSubmit} sx={{  pt:2, mt:1,  maxWidth: 600, margin: 'auto', padding: 3, backgroundColor: 'white', borderRadius: 2, }}>
-      <Grid
-        container
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        spacing={3}
-      >
-        <Grid item>
-          <TextField
-            name="firstName"
-            value={activeUser.firstName}
-            onChange={handleChange}
-            variant="outlined"
-            sx={{ width: '250px' }}
-          />
-        </Grid>
-
-        <Grid item>
-          <TextField
-            name="lastName"
-            value={activeUser.lastName}
-            onChange={handleChange}
-            variant="outlined"
-            sx={{ width: '250px' }}
-          />
-        </Grid>
-
-        <Grid item>
-          <TextField
-            name="userName"
-            value={activeUser.userName}
-             onChange={handleChange}
-            variant="outlined"
-            sx={{ width: '250px' }}
-          />
-        </Grid>
-
-        <Grid item>
-          <TextField
-            name="password"
-            type="password"
-            value={activeUser.password}
-            onChange={handleChange}
-            variant="outlined"
-            sx={{ width: '250px' }}
-          />
-        </Grid>
-
-        <Grid item>
-          <Box display="flex" justifyContent="center">
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{ backgroundColor: 'limegreen', color: 'black'}}
-            >
-              {t('save')}
-            </Button>
-          </Box>
-
-          <Typography>{t('allowOthers')}</Typography>
-          <Checkbox></Checkbox>
-        </Grid>
-      </Grid>
-    </Box>
-
-    </Box>
-    </>
- );
+    return (
+      <Box sx={{ pt: 2, mt: 1, maxWidth: 400, margin: 'auto' }}>
+        <SectionTitle>{t('myAccount')}</SectionTitle>
+        <Box component="form" onSubmit={handleSubmit} sx={{
+          p: 3,
+          bgcolor: 'background.paper',
+          borderRadius: '16px',
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+        }}>
+          <Grid container direction="column" justifyContent="center" alignItems="center" spacing={3}>
+            <Grid>
+              <TextField
+                name="firstName"
+                value={activeUser.firstName}
+                onChange={handleChange}
+                variant="outlined"
+                sx={{ width: '250px' }}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                name="lastName"
+                value={activeUser.lastName}
+                onChange={handleChange}
+                variant="outlined"
+                sx={{ width: '250px' }}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                name="userName"
+                value={activeUser.userName}
+                onChange={handleChange}
+                variant="outlined"
+                sx={{ width: '250px' }}
+              />
+            </Grid>
+            <Grid>
+              <TextField
+                name="password"
+                type="password"
+                value={activeUser.password}
+                onChange={handleChange}
+                variant="outlined"
+                sx={{ width: '250px' }}
+              />
+            </Grid>
+            <Grid>
+              <Box display="flex" justifyContent="center">
+                <Button type="submit" variant="contained" color="primary">
+                  {t('save')}
+                </Button>
+              </Box>
+              <Typography>{t('allowOthers')}</Typography>
+              <Checkbox />
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    );
 }
 
 export default MyAccountComp;

@@ -42,16 +42,18 @@ const LoginFormComp = () => {
 
 return (
     <>
-    <Container maxWidth="sm"   sx={{
-        backgroundColor: 'rgba(205, 205, 205, 0.5)',
-        border: '2px solid rgba(0, 0, 0, 0.1)', // Transparent border with rgba
-        borderRadius: '8px', // Optional, gives rounded corners
-        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Optional, adds shadow for better visibility
-        padding: '24px'
-      }}>
-  <Box sx={{ mt: 4 }}>
+    <Container maxWidth="sm" sx={{
+  bgcolor: 'background.paper',
+  border: '1px solid',
+  borderColor: 'divider',
+  borderRadius: '16px',
+  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+  p: 4,
+  mt: 4,
+}}>
+  <Box>
   <Grid container justifyContent="center">
-      <Grid item>
+      <Grid>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           {t('appTitle')}
         </Typography>
@@ -59,7 +61,7 @@ return (
     </Grid>
     <form onSubmit={handleSubmit}>
 
-        <Grid item>
+        <Grid>
           <TextField
             label={t('email')}
             name="email"
@@ -70,7 +72,7 @@ return (
           />
         </Grid>
 
-        <Grid item>
+        <Grid>
           <TextField
             label={t('password')}
             name="password"
@@ -81,7 +83,7 @@ return (
           />
         </Grid>
 
-        <Grid item>
+        <Grid>
           <Box display="flex" justifyContent="center">
             <Button
               type="submit"
@@ -93,7 +95,7 @@ return (
             </Button>
           </Box>
         </Grid>
-        <Grid item>
+        <Grid>
           <Box display="flex" justifyContent="center">
          {t('newUser')} <Link to='/register'>{t('registerLink')}</Link>
           </Box>

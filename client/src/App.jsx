@@ -15,6 +15,7 @@ import MyOrders from "./componetns/Customer/MyOrders"
 import ProductCatalog from "./componetns/Customer/ProductCatalog"
 import PaymentPage from "./componetns/Customer/PaymentPage"
 import HomePage from "./pages/HomePage"
+import ProductPage from "./pages/ProductPage"
 
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
@@ -34,6 +35,7 @@ function App() {
     <>
     <Routes>
       <Route path='/' element={<HomePage />} />
+      <Route path='/product/:id' element={<ProductPage />} />
       <Route path='/login' element={<LoginFormComp />} />
       <Route path='/register' element={<RegisterFormComp />} />
 

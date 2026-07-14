@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Divider, Stack, TextField, ToggleButton, ToggleButtonGroup, Grid } from "@mui/material";
+import { Box, Typography, Button, Divider, Stack, TextField, ToggleButton, ToggleButtonGroup, Grid, Alert } from "@mui/material";
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -24,6 +24,8 @@ const PaymentPage = () => {
 
   });
   const [shippingOption, setShippingOption] = useState(SHIPPING_FREE);
+  const [validationError, setValidationError] = useState('');
+  const [orderError, setOrderError] = useState('');
 
   const itemsTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCost = shippingOption === SHIPPING_PAID ? SHIPPING_COST : 0;
@@ -77,28 +79,40 @@ const PaymentPage = () => {
   };
 
   const handleBit = async () => {
-     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
-    alert('אנא מלא את כל פרטי המשלוח');
-    return;
-     }
-    await completeOrder();
-    window.open(`https://pay.bit.co.il/pay?phoneNumber=0538280217&amount=${grandTotal}`, '_blank');
-    window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
-    navigate('/account/orders');
+    setValidationError('');
+    setOrderError('');
+    if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+      setValidationError(t('fillShippingDetails'));
+      return;
+    }
+    try {
+      await completeOrder();
+      window.open(`https://pay.bit.co.il/pay?phoneNumber=0538280217&amount=${grandTotal}`, '_blank');
+      window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
+      navigate('/account/orders');
+    } catch {
+      setOrderError(t('errorSubmittingOrder'));
+    }
   };
 
   const handlePayLater = async () => {
-     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
-    alert('אנא מלא את כל פרטי המשלוח');
-    return;
+    setValidationError('');
+    setOrderError('');
+    if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+      setValidationError(t('fillShippingDetails'));
+      return;
     }
-    await completeOrder();
-    window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
-    navigate('/account/orders');
+    try {
+      await completeOrder();
+      window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
+      navigate('/account/orders');
+    } catch {
+      setOrderError(t('errorSubmittingOrder'));
+    }
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#FFFFFF', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', pt: 6, px: 2 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', pt: 6, px: 2 }}>
       <Box sx={{ width: '100%', maxWidth: 480 }}>
         <Typography variant="h5" fontWeight="bold" textAlign="center" mb={1}>
           סיכום הזמנה
@@ -108,9 +122,9 @@ const PaymentPage = () => {
         </Typography>
 
         {/* Order items */}
-        <Box sx={{ backgroundColor: '#F8F9FA', borderRadius: 3, p: 2, mb: 3 }}>
+        <Box sx={{ bgcolor: 'background.paper', borderRadius: 3, p: 2, mb: 3 }}>
           {cart.map((item) => (
-            <Box key={item._id} sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1.5, borderBottom: '1px solid #E5E7EB', '&:last-child': { borderBottom: 'none' } }}>
+            <Box key={item._id} sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' } }}>
               <Box
                 component="img"
                 src={item.pic || 'https://placehold.co/60x60?text=?'}
@@ -121,7 +135,7 @@ const PaymentPage = () => {
                 <Typography fontWeight="bold" fontSize={15}>{item.title}</Typography>
                 <Typography variant="body2" color="text.secondary">כמות: {item.quantity} × ₪{item.price}</Typography>
               </Box>
-              <Typography fontWeight="bold" color="#FF6B00" fontSize={16}>
+              <Typography fontWeight="bold" sx={{ color: 'primary.main' }} fontSize={16}>
                 ₪{item.price * item.quantity}
               </Typography>
             </Box>
@@ -131,7 +145,7 @@ const PaymentPage = () => {
         {/* Shipping section */}
 
 
-        <Box sx={{ backgroundColor: '#F8F9FA', borderRadius: 3, p: 2, mb: 3 }}>
+        <Box sx={{ bgcolor: 'background.paper', borderRadius: 3, p: 2, mb: 3 }}>
           <Typography fontWeight="bold" mb={1.5}>פרטי משלוח</Typography>
 {/* <form onSubmit={handleAddressSubmit}> */}
   <Grid
@@ -141,7 +155,7 @@ const PaymentPage = () => {
     alignItems="center"
     spacing={3}
   >
-    <Grid item>
+    <Grid>
       <TextField
         label={t('address')}
         name="address"
@@ -152,7 +166,7 @@ const PaymentPage = () => {
       />
     </Grid>
 
-    <Grid item>
+    <Grid>
       <TextField
         label={t('city')}
         name="city"
@@ -163,7 +177,7 @@ const PaymentPage = () => {
       />
     </Grid>
 
-    <Grid item>
+    <Grid>
       <TextField
         label={t('postalCode')}
         name="postalCode"
@@ -174,7 +188,7 @@ const PaymentPage = () => {
       />
     </Grid>
 
-    <Grid item>
+    <Grid>
       <TextField
         label={t('phoneNumber')}
         name="phoneNumber"
@@ -197,7 +211,7 @@ const PaymentPage = () => {
               value={SHIPPING_FREE}
               sx={{
                 flex: 1, borderRadius: 2, textTransform: 'none', fontSize: 13, py: 1.2,
-                '&.Mui-selected': { backgroundColor: '#FF6B00', color: '#fff', '&:hover': { backgroundColor: '#e05a00' } },
+                '&.Mui-selected': { bgcolor: 'primary.main', color: '#fff', '&:hover': { bgcolor: 'primary.dark' } },
               }}
             >
               ✅ טבריה והסביבה — משלוח חינם
@@ -206,7 +220,7 @@ const PaymentPage = () => {
               value={SHIPPING_PAID}
               sx={{
                 flex: 1, borderRadius: 2, textTransform: 'none', fontSize: 13, py: 1.2,
-                '&.Mui-selected': { backgroundColor: '#FF6B00', color: '#fff', '&:hover': { backgroundColor: '#e05a00' } },
+                '&.Mui-selected': { bgcolor: 'primary.main', color: '#fff', '&:hover': { bgcolor: 'primary.dark' } },
               }}
             >
               📦 אחר — משלוח ₪{SHIPPING_COST}
@@ -229,12 +243,22 @@ const PaymentPage = () => {
           <Divider sx={{ mb: 1 }} />
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography variant="h6" fontWeight="bold">סה״כ לתשלום</Typography>
-            <Typography variant="h6" fontWeight="bold" color="#FF6B00">₪{grandTotal}</Typography>
+            <Typography variant="h6" fontWeight="bold" sx={{ color: 'primary.main' }}>₪{grandTotal}</Typography>
           </Box>
         </Box>
 
         <Divider sx={{ mb: 3 }} />
 
+        {validationError && (
+          <Alert severity="error" onClose={() => setValidationError('')} sx={{ mb: 2 }}>
+            {validationError}
+          </Alert>
+        )}
+        {orderError && (
+          <Alert severity="error" onClose={() => setOrderError('')} sx={{ mb: 2 }}>
+            {orderError}
+          </Alert>
+        )}
         <Stack spacing={1.5}>
           <Button
             variant="contained"
@@ -248,7 +272,7 @@ const PaymentPage = () => {
             variant="outlined"
             onClick={handlePayLater}
             fullWidth
-            sx={{ py: 1.5, fontSize: 16, borderRadius: 2, color: '#6B7280', borderColor: '#E5E7EB', '&:hover': { borderColor: '#9CA3AF', backgroundColor: '#F9FAFB' } }}
+            sx={{ py: 1.5, fontSize: 16, borderRadius: 2, color: 'text.secondary', borderColor: 'divider', '&:hover': { borderColor: 'text.disabled', bgcolor: 'background.paper' } }}
           >
             אשלם מאוחר יותר
           </Button>

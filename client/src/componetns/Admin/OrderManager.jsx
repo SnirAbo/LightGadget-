@@ -33,12 +33,12 @@ const OrderManagerComp = () => {
 
   return (
     <>
-      <Box sx={{ pt: 2, mt: 1, maxWidth: 1100, margin: 'auto', padding: 3, backgroundColor: '#b2b2b2', borderRadius: 2 }}>
+      <Box sx={{ pt: 2, mt: 1, maxWidth: 1100, margin: 'auto', padding: 3, borderRadius: 2 }}>
         <Typography sx={{ mt: 1, mb: 2 }} variant="h4" fontWeight="bold">
           הזמנות
         </Typography>
 
-        <Box sx={{ mt: 2, p: 2, backgroundColor: '#f0f0f0', borderRadius: 2, overflowX: 'auto' }}>
+        <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 2, overflowX: 'auto' }}>
           <TableContainer component={Paper}>
             <Table size="small">
               <TableHead>

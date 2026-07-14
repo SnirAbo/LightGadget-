@@ -25,7 +25,7 @@ return (
       </Stack>
 
 
-    <Box sx={{ borderTop: '2px solid #ccc' }}>
+    <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
          <Box sx={{ mt: 4 }}>
             <Outlet />
          </Box>

@@ -32,14 +32,14 @@ return (
         <Button component={Link} to="orders">{t('orders')}</Button>
         <Button component={Link} to="products">{t('products')}</Button>
         {loggedUser.role === 'admin' && (
-          <Button component={Link} to="/admin" color="warning">{t('adminPanel')}</Button>
+          <Button component={Link} to="/admin" variant="outlined" sx={{ color: 'primary.main', borderColor: 'primary.main' }}>{t('adminPanel')}</Button>
         )}
         <Button onClick={logOut}>{t('logOut')}</Button>
         <Button onClick={toggleLang} variant="outlined" size="small">{t('langToggle')}</Button>
       </Stack>
 
 
-    <Box sx={{ borderTop: '2px solid #ccc' }}>
+    <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
         {/* פה ייכנס התוכן של הדפים הפנימיים */}
          <Box sx={{ mt: 4 }}>
             <Outlet />

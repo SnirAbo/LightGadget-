@@ -46,9 +46,9 @@ const StatisticsDashboardComp = () => {
 
   return (
     <>
-      <Box sx={{ padding: 2, margin: 'auto', backgroundColor: 'lightgrey', maxWidth: 500 }}>
+      <Box sx={{ padding: 2, margin: 'auto', bgcolor: 'background.paper', maxWidth: 500 }}>
         <Typography sx={{ textAlign: 'center', margin: 'auto' }}>{t('totalSoldProducts')}</Typography>
-        <Box sx={{ border: '1px solid white', maxWidth: 400, margin: 'auto' }}>
+        <Box sx={{ border: '1px solid', borderColor: 'divider', maxWidth: 400, margin: 'auto' }}>
           {pieData.length > 0 ? (
             <PieChart
               series={[{ data: pieData }]}
@@ -63,7 +63,7 @@ const StatisticsDashboardComp = () => {
 
       <Divider />
 
-      <Box sx={{ padding: 2, margin: 'auto', backgroundColor: 'lightgrey', maxWidth: 500 }}>
+      <Box sx={{ padding: 2, margin: 'auto', bgcolor: 'background.paper', maxWidth: 500 }}>
         <Select
           value={selectedUserId}
           onChange={(e) => setSelectedUserId(e.target.value)}

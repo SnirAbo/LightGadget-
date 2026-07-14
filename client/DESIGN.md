@@ -7,7 +7,6 @@
 > **MUI-first (web):** Implement the system through a **central MUI theme** (`createTheme`) and reference theme values via the `sx` prop and `theme.palette` / `theme.typography` / `theme.spacing`. Do **not** hardcode hex values in components once the theme exists — use `sx={{ color: 'primary.main' }}`, `bgcolor: 'background.default'`, etc. **Always use `sx`, never the `style` prop.**
 >
 > **Mobile:** see section 10. Same tokens, different implementation.
-
 ---
 
 ## 1. Design Direction — "Modern Clean Tech Retail"
@@ -193,6 +192,8 @@ Use via the theme (`sx={{ color: 'primary.main' }}`), not raw hex.
 ---
 
 ## 5. Spacing & Layout
+
+MUI v6+ Grid API: Use <Grid size={{ xs: 6, sm: 4, md: 3 }}>. The item prop and standalone xs/sm/md props are silently ignored — they cause content-based auto-layout instead of a fixed grid.
 
 MUI `spacing` = 8px base. Use `theme.spacing(n)` or shorthand `sx={{ p: 2 }}` (= 16px), `sx={{ mb: 3 }}` (= 24px).
 
