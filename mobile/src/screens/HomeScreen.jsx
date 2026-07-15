@@ -1,20 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import { Card, Text, Button, Chip, Searchbar } from 'react-native-paper';
+import { Chip, Searchbar, Text, Button, useTheme } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
+import ProductCard from '../components/ProductCard';
+import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import api from '../api/api';
 
-const HomeScreen = () => {
+const SKELETON_COUNT = 4;
+const SKELETONS = Array.from({ length: SKELETON_COUNT }, (_, i) => ({ _id: String(i) }));
+
+const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const { colors } = useTheme();
   const products = useSelector((state) => state.product.products);
   const categories = useSelector((state) => state.category.categories);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    api.get('/products').then((res) => dispatch({ type: 'LOAD_PRODUCT', payload: res.data }));
-    api.get('/categories').then((res) => dispatch({ type: 'LOAD_CATEGORY', payload: res.data }));
-  }, []);
+  const fetchData = useCallback(async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const [productsRes, categoriesRes] = await Promise.all([
+        api.get('/products'),
+        api.get('/categories'),
+      ]);
+      dispatch({ type: 'LOAD_PRODUCT',  payload: productsRes.data });
+      dispatch({ type: 'LOAD_CATEGORY', payload: categoriesRes.data });
+    } catch {
+      setError('לא הצלחנו לטעון את המוצרים. בדוק את החיבור ונסה שוב.');
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const filtered = products.filter(
     (p) =>
@@ -24,50 +47,48 @@ const HomeScreen = () => {
 
   const addToCart = (product) => dispatch({ type: 'ADD_TO_CART', payload: product });
 
-  const renderProduct = ({ item }) => (
-    <Card style={styles.card}>
-      {item.pic ? <Card.Cover source={{ uri: item.pic }} style={styles.cover} /> : null}
-      <Card.Content style={styles.cardContent}>
-        <Text variant="titleMedium" style={styles.productTitle} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text variant="bodySmall" style={styles.category}>
-          {item.category}
-        </Text>
-        <Text variant="titleSmall" style={styles.price}>
-          ₪{item.price}
-        </Text>
-        <Chip
-          style={[styles.chip, { backgroundColor: item.quantity > 0 ? '#22C55E' : '#EF4444' }]}
-          textStyle={{ color: '#fff', fontSize: 11 }}
-        >
-          {item.quantity > 0 ? 'במלאי' : 'אזל המלאי'}
-        </Chip>
-      </Card.Content>
-      <Card.Actions>
-        <Button
-          mode="contained"
-          onPress={() => addToCart(item)}
-          disabled={item.quantity === 0}
-          buttonColor="#FF6B00"
-          style={styles.cartButton}
-        >
-          הוסף לעגלה
-        </Button>
-      </Card.Actions>
-    </Card>
-  );
+  // --- Loading ---
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <FlatList
+          data={SKELETONS}
+          keyExtractor={(item) => item._id}
+          renderItem={() => <ProductCardSkeleton />}
+          numColumns={2}
+          contentContainerStyle={styles.grid}
+          scrollEnabled={false}
+        />
+      </View>
+    );
+  }
 
+  // --- Error ---
+  if (error) {
+    return (
+      <View style={[styles.centeredContainer, { backgroundColor: colors.background }]}>
+        <Ionicons name="cloud-offline-outline" size={48} color={colors.onSurfaceVariant} />
+        <Text variant="titleMedium" style={[styles.stateTitle, { color: colors.onSurface }]}>
+          {error}
+        </Text>
+        <Button mode="contained" onPress={fetchData} style={styles.retryButton}>
+          נסה שוב
+        </Button>
+      </View>
+    );
+  }
+
+  // --- Normal / Empty ---
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Searchbar
         placeholder="חיפוש..."
         value={search}
         onChangeText={setSearch}
-        style={styles.searchbar}
-        placeholderTextColor="#6B7280"
-        inputStyle={{ color: '#1A1A1A' }}
-        iconColor="#6B7280"
+        style={[styles.searchbar, { backgroundColor: colors.surface, borderColor: colors.outline }]}
+        placeholderTextColor={colors.onSurfaceVariant}
+        inputStyle={{ color: colors.onSurface }}
+        iconColor={colors.onSurfaceVariant}
       />
       <FlatList
         horizontal
@@ -75,8 +96,12 @@ const HomeScreen = () => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <Chip
-            style={[styles.categoryChip, selectedCategory === item.name && styles.selectedChip]}
-            textStyle={{ color: selectedCategory === item.name ? '#FFFFFF' : '#1A1A1A' }}
+            style={[
+              styles.categoryChip,
+              { backgroundColor: colors.surface, borderColor: colors.outline },
+              selectedCategory === item.name && { backgroundColor: colors.primary, borderColor: colors.primary },
+            ]}
+            textStyle={{ color: selectedCategory === item.name ? colors.onPrimary : colors.onSurface }}
             onPress={() => setSelectedCategory(item.name)}
           >
             {item.name === 'All' ? 'הכל' : item.name}
@@ -85,32 +110,46 @@ const HomeScreen = () => {
         style={styles.categoryList}
         showsHorizontalScrollIndicator={false}
       />
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item._id}
-        renderItem={renderProduct}
-        numColumns={2}
-        contentContainerStyle={styles.grid}
-      />
+
+      {filtered.length === 0 ? (
+        // --- Empty state ---
+        <View style={styles.centeredContainer}>
+          <Ionicons name="search-outline" size={48} color={colors.onSurfaceVariant} />
+          <Text variant="headlineSmall" style={[styles.stateTitle, { color: colors.onSurface }]}>
+            לא נמצאו מוצרים
+          </Text>
+          <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant, textAlign: 'center' }}>
+            נסה מונח אחר או עיין בקטגוריות
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <ProductCard
+              item={item}
+              onAddToCart={addToCart}
+              onPress={() => navigation.navigate('Product', { productId: item._id })}
+            />
+          )}
+          numColumns={2}
+          contentContainerStyle={styles.grid}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  searchbar: { margin: 12, backgroundColor: '#F8F9FA', elevation: 0, borderWidth: 1, borderColor: '#E5E7EB' },
-  categoryList: { paddingHorizontal: 12, marginBottom: 8, flexGrow: 0 },
-  categoryChip: { marginRight: 8, backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#E5E7EB' },
-  selectedChip: { backgroundColor: '#FF6B00', borderColor: '#FF6B00' },
-  grid: { paddingHorizontal: 8, paddingBottom: 16 },
-  card: { flex: 1, margin: 6, backgroundColor: '#F8F9FA', elevation: 1 },
-  cover: { height: 130 },
-  cardContent: { paddingVertical: 8 },
-  productTitle: { color: '#1A1A1A', fontWeight: 'bold' },
-  category: { color: '#6B7280', marginTop: 2 },
-  price: { color: '#FF6B00', marginTop: 4, fontWeight: 'bold' },
-  chip: { marginTop: 6, alignSelf: 'flex-start' },
-  cartButton: { flex: 1 },
+  container:         { flex: 1 },
+  centeredContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 16 },
+  searchbar:         { margin: 12, elevation: 0, borderWidth: 1 },
+  categoryList:      { paddingHorizontal: 12, marginBottom: 8, flexGrow: 0 },
+  categoryChip:      { marginRight: 8, borderWidth: 1 },
+  grid:              { paddingHorizontal: 8, paddingBottom: 16 },
+  stateTitle:        { textAlign: 'center', marginTop: 8 },
+  retryButton:       { marginTop: 8, borderRadius: 8 },
 });
 
 export default HomeScreen;

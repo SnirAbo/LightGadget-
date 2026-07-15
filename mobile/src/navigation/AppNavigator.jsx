@@ -13,6 +13,7 @@ import OrdersScreen from '../screens/OrdersScreen';
 import AccountScreen from '../screens/AccountScreen';
 import AdminScreen from '../screens/AdminScreen';
 import PaymentScreen from '../screens/PaymentScreen';
+import ProductScreen from '../screens/ProductScreen';
 
 const RootStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -83,6 +84,7 @@ export default function AppNavigator() {
         <RootStack.Screen name="Login" component={LoginScreen} options={{ title: 'כניסה' }} />
         <RootStack.Screen name="Register" component={RegisterScreen} options={{ title: 'הרשמה' }} />
         <RootStack.Screen name="Payment" component={PaymentScreen} options={{ title: 'תשלום' }} />
+        <RootStack.Screen name="Product" component={ProductScreen} options={{ title: '' }} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

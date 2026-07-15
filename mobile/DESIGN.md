@@ -471,6 +471,8 @@ error            → #EF4444
 
 **RTL:** use `I18nManager.forceRTL(true)` for Hebrew; use logical props (`marginStart` / `marginEnd`).
 
+the mobile app is in LightGadget/mobile work there
+
 ---
 
 ## 11. Quality Floor (non-negotiable)
