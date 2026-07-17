@@ -29,14 +29,15 @@ router.get('/', authMiddleware, adminOnly, async (req, res) => {
 
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const result = await orderService.addOrder(req.body);
+    // user must come from the verified token, not the request body
+    const result = await orderService.addOrder({ ...req.body, user: req.user.id });
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json(error.message);
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', authMiddleware, async (req, res) => {
   try {
     const order = await orderService.getById(req.params.id);
     res.json(order);

@@ -18,7 +18,24 @@ import createAppTheme from './theme.js';
 const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [rtlPlugin] });
 const cacheLtr = createCache({ key: 'muiltr' });
 
-const store = createStore(reducer);
+const loadCart = () => {
+  try {
+    const raw = localStorage.getItem('cart');
+    return raw ? { cart: { cart: JSON.parse(raw) } } : {};
+  } catch {
+    return {};
+  }
+};
+
+const store = createStore(reducer, loadCart());
+
+store.subscribe(() => {
+  try {
+    localStorage.setItem('cart', JSON.stringify(store.getState().cart.cart));
+  } catch {
+    // Quota exceeded or private browsing — ignore
+  }
+});
 
 const ThemedApp = () => {
   const { lang } = useLanguage();

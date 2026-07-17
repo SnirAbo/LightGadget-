@@ -87,6 +87,7 @@ const PaymentPage = () => {
     }
     try {
       await completeOrder();
+      dispatch({ type: 'CLEAR_CART' });
       window.open(`https://pay.bit.co.il/pay?phoneNumber=0538280217&amount=${grandTotal}`, '_blank');
       window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
       navigate('/account/orders');
@@ -104,6 +105,7 @@ const PaymentPage = () => {
     }
     try {
       await completeOrder();
+      dispatch({ type: 'CLEAR_CART' });
       window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
       navigate('/account/orders');
     } catch {
