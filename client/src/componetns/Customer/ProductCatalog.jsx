@@ -6,6 +6,7 @@ import Cart from './Cart';
 import { useLanguage } from '../../LanguageContext';
 import ProductCard from '../ProductCard';
 import SectionTitle from '../SectionTitle';
+import SearchIcon from '@mui/icons-material/Search';
 
 const ProductCatalogComp = () => {
   const dispatch = useDispatch();
@@ -75,13 +76,13 @@ const ProductCatalogComp = () => {
             {t('SmartHomeTech')}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: 400 }}>
-            גאדג&apos;טים, ציוד חכם ואביזרים לבית המודרני — במחירים שמפתיעים.
+             {t('smartGadgets')} - {t('SurprisingPrices')}
           </Typography>
           <Button variant="contained" color="primary" component="a" href="#products">
            {t('productCatalog')}
           </Button>
         </Box>
-        {products[0]?.pic && (
+        {/* {products[0]?.pic && (
           <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Box
               component="img"
@@ -90,7 +91,7 @@ const ProductCatalogComp = () => {
               sx={{ maxHeight: 300, maxWidth: '100%', objectFit: 'contain' }}
             />
           </Box>
-        )}
+        )} */}
       </Box>
 
       <Cart />
@@ -131,12 +132,15 @@ const ProductCatalogComp = () => {
                   aria-label="Price"
                   valueLabelDisplay="auto"
                 />
+                
               </Box>
+              <SearchIcon/>
               <TextField
                 onChange={(e) => setSearchText(e.target.value)}
                 size="small"
-                InputProps={{ sx: { height: 32, maxWidth: 120 } }}
-                placeholder="..."
+                InputProps={{ sx: { height: 32, maxWidth: 220 } }}
+
+                placeholder="חפש מוצר"
               />
               <Button onClick={clearFilters} size="small" variant="outlined">
                 {t('clear')}

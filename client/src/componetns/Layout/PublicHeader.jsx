@@ -9,6 +9,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLanguage } from '../../LanguageContext';
 import { useCartDrawer } from '../../CartDrawerContext';
+import LogoImage from '../../assets/logo.png';
 
 const PublicHeader = () => {
   const navigate = useNavigate();
@@ -60,17 +61,28 @@ const PublicHeader = () => {
       elevation={0}
       sx={{ bgcolor: 'background.default', borderBottom: '1px solid', borderColor: 'divider' }}
     >
-      <Toolbar>
-        <Typography
+      <Toolbar sx={{ minHeight: { xs: 64, md: 80 } }}>
+        {/* <Typography
           variant="h6"
           component={Link}
           to="/"
           sx={{ textDecoration: 'none', color: 'text.primary', fontWeight: 700, me: 4 }}
         >
           LightGadget
-        </Typography>
-
-        <Box sx={{ flexGrow: 1 }} />
+        </Typography> */}
+        <Box 
+        component={Link}
+        to="/"
+        sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box component="img" src={LogoImage} alt="LightGadget"
+        sx={{ 
+          height: 64,
+          width: 'auto',
+          display: 'block',
+          borderRadius: '8px',
+        }} />
+        </Box>
+        <Box sx={{ flexGrow: 1}} />
 
         {/* Desktop nav — hidden on mobile */}
         <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 1 }}>
