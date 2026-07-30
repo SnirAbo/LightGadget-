@@ -19,6 +19,10 @@ const orderSchema = new mongoose.Schema(
     status: { type: String, enum: ['pending', 'shipped', 'delivered'], default: 'pending' },
     phoneNumber: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
+    paidAt: { type: Date },
+    transactionId: { type: String },
+    paymentStatus: { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' },
+    lowProfileId: { type: String },
   },
   { versionKey: false }
 );

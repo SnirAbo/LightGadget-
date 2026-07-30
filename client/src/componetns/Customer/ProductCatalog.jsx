@@ -7,6 +7,8 @@ import { useLanguage } from '../../LanguageContext';
 import ProductCard from '../ProductCard';
 import SectionTitle from '../SectionTitle';
 import SearchIcon from '@mui/icons-material/Search';
+import { InputAdornment } from '@mui/material';
+
 
 const ProductCatalogComp = () => {
   const dispatch = useDispatch();
@@ -14,7 +16,7 @@ const ProductCatalogComp = () => {
   const products = useSelector((state) => state.product.products);
   const categories = useSelector((state) => state.category.categories);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const [maxPrice, setMaxPrice] = useState(Infinity);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(true);
   const [productsError, setProductsError] = useState(false);
@@ -55,7 +57,7 @@ const ProductCatalogComp = () => {
 
   const clearFilters = () => {
     setSelectedCategory('All');
-    setMaxPrice(1000);
+    setMaxPrice(Infinity);
     setSearchText('');
   };
 
@@ -124,21 +126,45 @@ const ProductCatalogComp = () => {
           <Box sx={{ px: 1, py: 1, bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
             <Stack direction="row" spacing={2} alignItems="center" sx={{ flexWrap: 'wrap', gap: 1 }}>
               <Typography variant="body2">{t('price')}</Typography>
-              <Box sx={{ width: 150 }}>
-                <Slider
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  size="small"
-                  defaultValue={70}
-                  aria-label="Price"
-                  valueLabelDisplay="auto"
-                />
-                
-              </Box>
-              <SearchIcon/>
+              {(() => {
+                const prices = products.map((p) => p.price);
+                const priceMin = prices.length ? Math.floor(Math.min(...prices)) : 0;
+                const priceMax = prices.length ? Math.ceil(Math.max(...prices)) : 1000;
+                const sliderVal = isFinite(maxPrice) ? Math.min(maxPrice, priceMax) : priceMax;
+                return (
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <Typography variant="caption" color="text.secondary">
+                      {t('currency')}{priceMin}
+                    </Typography>
+                    <Box sx={{ width: 150 }}>
+                      <Slider
+                        value={sliderVal}
+                        min={priceMin}
+                        max={priceMax}
+                        onChange={(_, val) => setMaxPrice(val)}
+                        size="small"
+                        aria-label={t('price')}
+                        valueLabelDisplay="auto"
+                        disabled={products.length === 0}
+                      />
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {t('currency')}{priceMax}
+                    </Typography>
+                  </Stack>
+                );
+              })()}
               <TextField
                 onChange={(e) => setSearchText(e.target.value)}
                 size="small"
-                InputProps={{ sx: { height: 32, maxWidth: 220 } }}
+                InputProps={{ 
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),                
+                 sx: { height: 32, maxWidth: 220 }              
+                }}
 
                 placeholder="חפש מוצר"
               />

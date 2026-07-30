@@ -7,6 +7,8 @@ const categoriesRouter = require('./controllers/categoryController');
 const authRouter = require('./controllers/authController');
 const uploadRouter = require('./controllers/uploadController');
 const orderRouter = require('./controllers/orderController');
+const paymentRouter = require('./controllers/paymentController');
+const { createPaymentPage } = require('./services/paymentService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +23,7 @@ app.use(cors({
 app.use(express.json(
 ));
 
+app.use('/payments', paymentRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
 app.use('/categories', categoriesRouter);

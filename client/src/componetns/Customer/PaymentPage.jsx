@@ -39,7 +39,7 @@ const PaymentPage = () => {
   if (!user || cart.length === 0) return null;
 
   const completeOrder = async () => {
-    await api.post('/orders', {
+   const { data } = await api.post('/orders', {
       user: user._id,
       items: cart.map((product) => ({
       product: product._id,
@@ -51,6 +51,7 @@ const PaymentPage = () => {
     shippingCost,
     totalPrice: grandTotal,
     });
+    return data;
   };
 
   const handleAddressChange = (e) => {
@@ -59,59 +60,57 @@ const PaymentPage = () => {
     [e.target.name]: e.target.value,
   }));
 };
-
-// const handleAddressSubmit = async (e) => {
-//   e.preventDefault();
-//   if (!address.city || !address.address || !address.postalCode || !address.phoneNumber) {
-//     alert('אנא מלא את כל השדות');
-//     return;
-//   }
-//   await completeOrder();
-//   alert('הזמנה הושלמה בהצלחה!');
-//   navigate('/account/orders');
-// }
-
-  const buildWaText = () => {
-    const itemLines = cart.map(p => `${p.title} × ${p.quantity} = ₪${p.price * p.quantity}`).join('\n');
-    const shippingLine = shippingCost > 0 ? `\nמשלוח: ₪${shippingCost}` : '\nמשלוח: חינם';
-    const cityLine = address.city ? `\nעיר: ${address.city}` : '';
-    return `🛒 הזמנה חדשה!\nשם: ${user.firstName} ${user.lastName}${cityLine}\nפריטים:\n${itemLines}${shippingLine}\nסה״כ: ₪${grandTotal}\nאנא אשר את ההזמנה 🙏`;
-  };
-
-  const handleBit = async () => {
+   const handleCardcom = async () => {
     setValidationError('');
     setOrderError('');
-    if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
       setValidationError(t('fillShippingDetails'));
       return;
     }
-    try {
-      await completeOrder();
-      dispatch({ type: 'CLEAR_CART' });
-      window.open(`https://pay.bit.co.il/pay?phoneNumber=0538280217&amount=${grandTotal}`, '_blank');
-      window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
-      navigate('/account/orders');
-    } catch {
+   try {
+      const order = await completeOrder();
+      const { data: payment } = await api.post(`/payments/create/${order._id}`);
+       window.location.href = payment.url;
+   }catch {
       setOrderError(t('errorSubmittingOrder'));
     }
-  };
+  }
 
-  const handlePayLater = async () => {
-    setValidationError('');
-    setOrderError('');
-    if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
-      setValidationError(t('fillShippingDetails'));
-      return;
-    }
-    try {
-      await completeOrder();
-      dispatch({ type: 'CLEAR_CART' });
-      window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
-      navigate('/account/orders');
-    } catch {
-      setOrderError(t('errorSubmittingOrder'));
-    }
-  };
+
+  // const handleBit = async () => {
+  //   setValidationError('');
+  //   setOrderError('');
+  //   if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+  //     setValidationError(t('fillShippingDetails'));
+  //     return;
+  //   }
+  //   try {
+  //     await completeOrder();
+  //     dispatch({ type: 'CLEAR_CART' });
+  //     window.open(`https://pay.bit.co.il/pay?phoneNumber=0538280217&amount=${grandTotal}`, '_blank');
+  //     window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
+  //     navigate('/account/orders');
+  //   } catch {
+  //     setOrderError(t('errorSubmittingOrder'));
+  //   }
+  // };
+
+  // const handlePayLater = async () => {
+  //   setValidationError('');
+  //   setOrderError('');
+  //   if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+  //     setValidationError(t('fillShippingDetails'));
+  //     return;
+  //   }
+  //   try {
+  //     await completeOrder();
+  //     dispatch({ type: 'CLEAR_CART' });
+  //     window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
+  //     navigate('/account/orders');
+  //   } catch {
+  //     setOrderError(t('errorSubmittingOrder'));
+  //   }
+  // };
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', pt: 6, px: 2 }}>
@@ -264,20 +263,20 @@ const PaymentPage = () => {
         <Stack spacing={1.5}>
           <Button
             variant="contained"
-            onClick={handleBit}
+            onClick={handleCardcom}
             fullWidth
             sx={{ backgroundColor: '#0080FF', py: 1.5, fontSize: 16, borderRadius: 2, '&:hover': { backgroundColor: '#0066CC' } }}
           >
-            שלם בביט
+            שלם עכשיו
           </Button>
-          <Button
+          {/* <Button
             variant="outlined"
-            onClick={handlePayLater}
+            onClick={}
             fullWidth
             sx={{ py: 1.5, fontSize: 16, borderRadius: 2, color: 'text.secondary', borderColor: 'divider', '&:hover': { borderColor: 'text.disabled', bgcolor: 'background.paper' } }}
           >
             אשלם מאוחר יותר
-          </Button>
+          </Button> */}
         </Stack>
       </Box>
     </Box>
