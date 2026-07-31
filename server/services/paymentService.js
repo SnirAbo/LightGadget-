@@ -10,8 +10,8 @@ async function createPaymentPage(order) {
     Amount: order.totalPrice,
     Operation: 'ChargeOnly',
     ReturnValue: String(order._id),
-    SuccessRedirectUrl: `${process.env.CLIENT_URL}/order-success`,
-    FailedRedirectUrl: `${process.env.CLIENT_URL}/order-failed`,
+    SuccessRedirectUrl: `${process.env.CLIENT_URL}/payment/success`,
+    FailedRedirectUrl: `${process.env.CLIENT_URL}/payment/failed`,
     WebHookUrl: `${process.env.SERVER_URL}/payments/webhook`,
   };
 

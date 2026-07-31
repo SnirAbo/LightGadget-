@@ -14,6 +14,8 @@ import MyAccount from "./componetns/Customer/MyAccount"
 import MyOrders from "./componetns/Customer/MyOrders"
 import ProductCatalog from "./componetns/Customer/ProductCatalog"
 import PaymentPage from "./componetns/Customer/PaymentPage"
+import PaymentSuccess from "./componetns/Customer/PaymentSuccess"
+import PaymentFailed from "./componetns/Customer/PaymentFailed"
 import HomePage from "./pages/HomePage"
 import ProductPage from "./pages/ProductPage"
 
@@ -56,6 +58,8 @@ function App() {
         <Route path='products' element= {<ProductCatalog />} />
       </Route>
       <Route path='/payment' element={<PaymentPage />} />
+      <Route path='/payment/success' element={<PaymentSuccess />} />
+      <Route path='/payment/failed' element={<PaymentFailed />} />
     </Route>
 
     </Routes>

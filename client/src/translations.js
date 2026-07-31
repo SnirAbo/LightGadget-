@@ -107,6 +107,10 @@ const translations = {
     errorSubmittingOrder: 'Order submission failed. Check your connection and press the payment button again.',
     fillShippingDetails: 'Please fill in all shipping details before completing the payment.',
     navigationMenu: 'Navigation menu',
+    paymentSuccessMessage: 'Payment received! Your order is on its way',
+    paymentFailedMessage: 'Payment was not completed, please try again',
+    viewMyOrders: 'View My Orders',
+    backToPayment: 'Back to payment',
   },
   he: {
     address: 'כתובת',
@@ -216,6 +220,10 @@ const translations = {
     navigationMenu: 'תפריט ניווט',
     smartGadgets: 'גאדג\' טים ציוד חכם ואביזרים לבית המודרני',
     SurprisingPrices: 'במחירים מפתיעים',
+    paymentSuccessMessage: 'התשלום התקבל! ההזמנה שלך בדרך אליך',
+    paymentFailedMessage: 'התשלום לא הושלם, נסה שוב',
+    viewMyOrders: 'צפה בהזמנות שלי',
+    backToPayment: 'חזרה לתשלום',
   },
 };
 
