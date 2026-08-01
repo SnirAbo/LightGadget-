@@ -1,3 +1,4 @@
+import Footer from "./componetns/Layout/Footer"
 import RegisterFormComp from "./componetns/Auth/RegisterForm"
 import { Route, Routes } from 'react-router-dom'
 import LoginFormComp from "./componetns/Auth/LoginForm"
@@ -18,6 +19,7 @@ import PaymentSuccess from "./componetns/Customer/PaymentSuccess"
 import PaymentFailed from "./componetns/Customer/PaymentFailed"
 import HomePage from "./pages/HomePage"
 import ProductPage from "./pages/ProductPage"
+import LandingV2 from "./pages/LandingV2"
 
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
@@ -36,8 +38,10 @@ function App() {
   return (
     <>
     <Routes>
-      <Route path='/' element={<HomePage />} />
+      <Route path='/' element={<LandingV2 />} />
       <Route path='/product/:id' element={<ProductPage />} />
+      <Route path='/products' element={<HomePage />} />
+
       <Route path='/login' element={<LoginFormComp />} />
       <Route path='/register' element={<RegisterFormComp />} />
 
@@ -63,6 +67,7 @@ function App() {
     </Route>
 
     </Routes>
+    <Footer />
     </>
   )
 }
