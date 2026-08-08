@@ -21,6 +21,13 @@ const addOrder = async (obj) => {
     return { product, quantity, title: p.title, price: p.price };
   });
 
+  for (const item of authorizedItems) {
+    const p = byId[item.product.toString()];
+    if (item.quantity > p.quantity) {
+      throw new Error(`Not enough stock for ${item.title} (only ${p.quantity} left)`);
+    }
+  }
+
   const itemsTotal = authorizedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const cost = Number(shippingCost) >= 0 ? Number(shippingCost) : 0;
 

@@ -133,6 +133,13 @@ const translations = {
     landingCtaSub: 'Discover our full collection of smart gadgets',
     landingCtaBtn: 'Browse the Catalog',
     landingNoProducts: 'No products to display yet',
+    stockCount: (n) => `In stock: ${n}`,
+    outOfStockMsg: 'Out of stock',
+    cartQty: 'Qty:',
+    decreaseQty: 'Decrease quantity',
+    increaseQty: 'Increase quantity',
+    cartEmpty: 'Your cart is empty',
+    cartEmptySub: 'Add items to get started',
   },
   he: {
     address: 'כתובת',
@@ -268,6 +275,13 @@ const translations = {
     landingCtaSub: 'גלה את כל הגאדג׳טים החכמים שלנו',
     landingCtaBtn: 'לקטלוג המוצרים',
     landingNoProducts: 'אין מוצרים להצגה עדיין',
+    stockCount: (n) => `במלאי: ${n}`,
+    outOfStockMsg: 'אזל מהמלאי',
+    cartQty: 'כמות:',
+    decreaseQty: 'הפחת כמות',
+    increaseQty: 'הגדל כמות',
+    cartEmpty: 'העגלה ריקה',
+    cartEmptySub: 'הוסף מוצרים כדי להתחיל',
   },
 };
 

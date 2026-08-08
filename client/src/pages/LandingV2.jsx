@@ -8,8 +8,8 @@ import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { Link } from 'react-router-dom';
+import heroVideo from '../assets/hero-bg.mp4';
 import { CartDrawerProvider } from '../CartDrawerContext';
 import PublicHeader from '../componetns/Layout/PublicHeader';
 import Cart from '../componetns/Customer/Cart';
@@ -18,119 +18,9 @@ import { useLanguage } from '../LanguageContext';
 import LandingProductCard from '../componetns/LandingV2/LandingProductCard';
 import api from '../api';
 
-// ── Hero: staggered product image mosaic ─────────────────────
-const MOSAIC_SLOTS = [
-  { pos: { top: '2%', left: '4%' },     rotate: '-4deg', zIndex: 3 },
-  { pos: { top: '18%', right: '4%' },   rotate: '3deg',  zIndex: 2 },
-  { pos: { bottom: '4%', left: '16%' }, rotate: '-1deg', zIndex: 1 },
-];
-
-// ── Mosaic card motion tunables ───────────────────────────────
-const ORBIT_DURATION  = 50;   // s — one full orbit; higher = calmer
-const ORBIT_RADIUS    = 10;   // px — max drift from rest (container clips at edges)
-const FLOAT_AMPLITUDE = 8;    // px — up/down bob height
-const SPIN_CARDS      = false; // true → each card also slowly rotates on its own axis
-
-const _FLOAT_DUR = [5.0, 4.3, 5.8]; // mismatched durations → organic, async bob
-const _FLOAT_DEL = [0, 1.8, 0.9];   // stagger so no two cards bob together
-
-const _orbitKF = (i) => {
-  const phase = (i * 2 * Math.PI) / 3; // 0°, 120°, 240° — evenly spaced
-  const N = 16;
-  const stops = Array.from({ length: N + 1 }, (_, k) => {
-    const pct   = ((k / N) * 100).toFixed(1);
-    const angle = (2 * Math.PI * k) / N + phase;
-    const x     = (ORBIT_RADIUS * Math.sin(angle)).toFixed(2);
-    const y     = (-ORBIT_RADIUS * Math.cos(angle)).toFixed(2);
-    const spin  = SPIN_CARDS ? `rotate(${((360 * k) / N).toFixed(1)}deg) ` : '';
-    return `${pct}%{transform:${spin}translate(${x}px,${y}px)}`;
-  });
-  return `@keyframes hmc-o${i}{${stops.join('')}}`;
-};
-const _floatKF = (i) =>
-  `@keyframes hmc-f${i}{0%,100%{transform:translateY(0)}50%{transform:translateY(-${FLOAT_AMPLITUDE}px)}}`;
-
-const MOSAIC_CSS = [0, 1, 2].map(i => _orbitKF(i) + _floatKF(i)).join('');
-
-const ProductMosaic = ({ products, loading }) => {
-  const [rm, setRm] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
-  const [isMobile] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const h = (e) => setRm(e.matches);
-    mq.addEventListener('change', h);
-    return () => mq.removeEventListener('change', h);
-  }, []);
-
-  return (
-    <Box sx={{ position: 'relative', height: 380, width: '100%', overflow: 'hidden' }}>
-      {!rm && <style>{MOSAIC_CSS}</style>}
-
-      {/* Orange accent circle behind cards */}
-      <Box sx={{
-        position: 'absolute',
-        width: 260, height: 260,
-        borderRadius: '50%',
-        bgcolor: 'primary.light',
-        top: '50%', left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 0,
-      }} />
-
-      {MOSAIC_SLOTS.map((slot, idx) => (
-        // Orbit wrapper — absolute positioned; CSS animation adds a slow circular drift
-        <Box key={idx} sx={{
-          position: 'absolute',
-          width: 140,
-          zIndex: slot.zIndex,
-          ...slot.pos,
-          animation: (!rm && !isMobile)
-            ? `hmc-o${idx} ${ORBIT_DURATION}s linear infinite`
-            : 'none',
-        }}>
-          {/* Float wrapper — gentle up/down bob, independent of orbit */}
-          <Box sx={{
-            animation: !rm
-              ? `hmc-f${idx} ${_FLOAT_DUR[idx]}s ease-in-out infinite ${_FLOAT_DEL[idx]}s`
-              : 'none',
-          }}>
-            {/* Card visual — static tilt, rounded corners, shadow */}
-            <Box sx={{
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-              bgcolor: 'background.paper',
-              transform: `rotate(${slot.rotate})`,
-            }}>
-              {loading || !products[idx] ? (
-                <Skeleton variant="rectangular" sx={{ width: '100%', aspectRatio: '1' }} />
-              ) : products[idx].pic ? (
-                <Box
-                  component="img"
-                  src={products[idx].pic}
-                  alt={products[idx].title}
-                  sx={{ width: '100%', aspectRatio: '1', objectFit: 'cover', display: 'block' }}
-                />
-              ) : (
-                <Box sx={{
-                  width: '100%', aspectRatio: '1',
-                  bgcolor: 'background.paper',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <ImageOutlinedIcon sx={{ fontSize: 40, color: 'text.disabled' }} />
-                </Box>
-              )}
-            </Box>
-          </Box>
-        </Box>
-      ))}
-    </Box>
-  );
-};
+// ── Hero video tunables ──────────────────────────────────────
+const OVERLAY_OPACITY         = 0.45; // tune 0–1: higher = darker overlay, more legible text
+const DISABLE_VIDEO_ON_MOBILE = true; // true → static theme background on mobile for perf
 
 // ── Trust strip ───────────────────────────────────────────────
 const TRUST = [
@@ -200,7 +90,7 @@ const CategoriesSection = ({ categories, loading }) => {
                 <Box
                   key={cat._id}
                   component={Link}
-                  to="/"
+                  to={`/products?category=${encodeURIComponent(cat.name)}`}
                   sx={{
                     flexShrink: 0,
                     width: 160, height: 120,
@@ -361,6 +251,13 @@ const LandingV2Inner = () => {
   const [productsLoading, setProductsLoading] = useState(true);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [productsError, setProductsError] = useState(false);
+  const [rm] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+  const [isMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches
+  );
+  const showVideo = !rm && !(DISABLE_VIDEO_ON_MOBILE && isMobile);
 
   const fetchProducts = useCallback(() => {
     setProductsLoading(true);
@@ -385,52 +282,80 @@ const LandingV2Inner = () => {
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <Box sx={{
+        position: 'relative',
         minHeight: { xs: '80vh', md: '88vh' },
         bgcolor: 'background.default',
         display: 'flex',
         alignItems: 'center',
         borderBottom: '1px solid',
         borderColor: 'divider',
+        overflow: 'hidden',
       }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={4} alignItems="center">
-            {/* Headline + CTA */}
-            <Grid size={{ xs: 12, md: 7 }}>
-              <Typography
-                component="h1"
-                sx={{
-                  fontSize: { xs: '2.25rem', sm: '3rem', md: '4rem' },
-                  fontWeight: 700,
-                  lineHeight: 1.1,
-                  color: 'text.primary',
-                  mb: 3,
-                }}
-              >
-                {t('landingHeroTitle')}
-              </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 480 }}>
-                {t('landingHeroSub')}
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                component="a"
-                href="/products"
-                sx={{ fontSize: '1rem', px: 5, py: 1.5 }}
-              >
-                {t('landingHeroCta')}
-              </Button>
-            </Grid>
+        {/* Video background — skipped on mobile (DISABLE_VIDEO_ON_MOBILE) and prefers-reduced-motion */}
+        {showVideo && (
+          <video
+            src={heroVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{
+              position: 'absolute',
+              top: 0, left: 0,
+              width: '100%', height: '100%',
+              objectFit: 'cover',
+              zIndex: 0,
+            }}
+          />
+        )}
 
-            {/* Mosaic — desktop only */}
-            <Grid
-              size={{ md: 5 }}
-              sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}
+        {/* Overlay — tune OVERLAY_OPACITY above to balance video brightness vs. text legibility */}
+        {showVideo && (
+          <Box sx={{
+            position: 'absolute',
+            inset: 0,
+            bgcolor: `rgba(0,0,0,${OVERLAY_OPACITY})`,
+            zIndex: 1,
+          }} />
+        )}
+
+        {/* Hero content — above video + overlay */}
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+          <Stack alignItems="center" sx={{ textAlign: 'center' }}>
+            <Typography
+              component="h1"
+              sx={{
+                fontSize: { xs: '2.25rem', sm: '3rem', md: '4rem' },
+                fontWeight: 700,
+                lineHeight: 1.1,
+                color: showVideo ? '#fff' : 'text.primary',
+                mb: 3,
+                maxWidth: 700,
+              }}
             >
-              <ProductMosaic products={products} loading={productsLoading} />
-            </Grid>
-          </Grid>
+              {t('landingHeroTitle')}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: showVideo ? 'rgba(255,255,255,0.85)' : 'text.secondary',
+                mb: 4,
+                maxWidth: 480,
+              }}
+            >
+              {t('landingHeroSub')}
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              component={Link}
+              to="/products"
+              sx={{ fontSize: '1rem', px: 5, py: 1.5 }}
+            >
+              {t('landingHeroCta')}
+            </Button>
+          </Stack>
         </Container>
       </Box>
 

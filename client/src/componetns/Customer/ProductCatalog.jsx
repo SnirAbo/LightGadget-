@@ -1,5 +1,6 @@
 import { Box, Typography, Button, TextField, Grid, Container, Stack, Slider, Skeleton, Card, CardContent, CardActions, Chip, Alert } from '@mui/material';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../../api';
 import { useDispatch, useSelector } from 'react-redux';
 import Cart from './Cart';
@@ -13,9 +14,12 @@ import { InputAdornment } from '@mui/material';
 const ProductCatalogComp = () => {
   const dispatch = useDispatch();
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
   const products = useSelector((state) => state.product.products);
   const categories = useSelector((state) => state.category.categories);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => searchParams.get('category') || 'All'
+  );
   const [maxPrice, setMaxPrice] = useState(Infinity);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(true);
@@ -64,7 +68,7 @@ const ProductCatalogComp = () => {
   return (
     <>
       {/* Hero */}
-      <Box sx={{
+      {/* <Box sx={{
         width: '100%',
         minHeight: { xs: 240, md: 380 },
         bgcolor: 'background.paper',
@@ -84,17 +88,8 @@ const ProductCatalogComp = () => {
            {t('productCatalog')}
           </Button>
         </Box>
-        {/* {products[0]?.pic && (
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Box
-              component="img"
-              src={products[0].pic}
-              alt="hero"
-              sx={{ maxHeight: 300, maxWidth: '100%', objectFit: 'contain' }}
-            />
-          </Box>
-        )} */}
-      </Box>
+        
+      </Box> */}
 
       <Cart />
 

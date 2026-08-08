@@ -1,6 +1,8 @@
-import { Box, Typography, Divider, Button, Stack, Drawer } from "@mui/material";
+import { Box, Typography, Divider, Button, Stack, Drawer, IconButton } from "@mui/material";
 import { Card, CardContent } from "@mui/material";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../LanguageContext';
@@ -16,6 +18,15 @@ const Cart = () => {
 
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
+  };
+
+  const handleCartQty = (item, delta) => {
+    const newQty = item.quantity + delta;
+    if (newQty < 1) {
+      dispatch({ type: 'REMOVE_FROM_CART', payload: { _id: item._id } });
+    } else if (newQty <= (item.stock ?? Infinity)) {
+      dispatch({ type: 'SET_QUANTITY', payload: { id: item._id, quantity: newQty } });
+    }
   };
 
   const handleOrder = () => {
@@ -49,8 +60,8 @@ const Cart = () => {
         {cart.length === 0 ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mt: 8 }}>
             <ShoppingCartOutlinedIcon sx={{ fontSize: 48, color: 'text.disabled' }} />
-            <Typography variant="h3" color="text.secondary">העגלה ריקה</Typography>
-            <Typography variant="body2" color="text.disabled">הוסף מוצרים כדי להתחיל</Typography>
+            <Typography variant="h3" color="text.secondary">{t('cartEmpty')}</Typography>
+            <Typography variant="body2" color="text.disabled">{t('cartEmptySub')}</Typography>
           </Box>
         ) : (
           <>
@@ -65,9 +76,17 @@ const Cart = () => {
                         alt={product.title}
                         sx={{ width: 60, height: 60, borderRadius: 2, objectFit: 'cover', flexShrink: 0 }}
                       />
-                      <Stack spacing={0.5}>
+                      <Stack spacing={0.5} sx={{ flexGrow: 1 }}>
                         <Typography variant="h6">{product.title}</Typography>
-                        <Typography variant="body2" color="text.secondary">{t('inStock')} {product.quantity}</Typography>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <IconButton size="small" onClick={() => handleCartQty(product, -1)} aria-label={t('decreaseQty')}>
+                            <RemoveIcon fontSize="small" />
+                          </IconButton>
+                          <Typography sx={{ minWidth: 24, textAlign: 'center' }}>{product.quantity}</Typography>
+                          <IconButton size="small" onClick={() => handleCartQty(product, 1)} disabled={product.quantity >= (product.stock ?? Infinity)} aria-label={t('increaseQty')}>
+                            <AddIcon fontSize="small" />
+                          </IconButton>
+                        </Stack>
                         <Typography variant="body2" fontWeight="bold" sx={{ color: 'primary.main' }}>₪{product.quantity * product.price}</Typography>
                       </Stack>
                     </Stack>

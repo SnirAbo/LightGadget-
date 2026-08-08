@@ -9,7 +9,7 @@ const initialState = {
           ...state,
           cart: state.cart.map(item =>
             item._id === action.payload
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: Math.min(item.quantity + 1, item.stock ?? Infinity) }
               : item
           ),
         };
@@ -35,19 +35,20 @@ const initialState = {
 
         case 'ADD_TO_CART': {
           const existingItem = state.cart.find(item => item._id === action.payload._id);
+          const selectedQty = action.payload.selectedQty ?? 1;
           if (existingItem) {
             return {
               ...state,
               cart: state.cart.map(item =>
                 item._id === action.payload._id
-                  ? { ...item, quantity: item.quantity + 1 }
+                  ? { ...item, quantity: Math.min(item.quantity + selectedQty, item.stock ?? Infinity) }
                   : item
               )
             };
           } else {
             return {
               ...state,
-              cart: [...state.cart, { ...action.payload, quantity: 1 }]
+              cart: [...state.cart, { ...action.payload, stock: action.payload.quantity, quantity: selectedQty }]
             };
           }
         }

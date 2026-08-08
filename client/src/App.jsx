@@ -1,4 +1,5 @@
 import Footer from "./componetns/Layout/Footer"
+import WhatsAppButton from "./componetns/WhatsAppButton"
 import RegisterFormComp from "./componetns/Auth/RegisterForm"
 import { Route, Routes } from 'react-router-dom'
 import LoginFormComp from "./componetns/Auth/LoginForm"
@@ -68,6 +69,7 @@ function App() {
 
     </Routes>
     <Footer />
+    <WhatsAppButton />
     </>
   )
 }

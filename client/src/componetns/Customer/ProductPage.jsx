@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  Box, Grid, Typography, Button, Chip, Stack, Alert, Skeleton, Container,
+  Box, Grid, Typography, Button, Chip, Stack, Alert, Skeleton, Container, IconButton,
 } from '@mui/material';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddIcon from '@mui/icons-material/Add';
 import { useDispatch } from 'react-redux';
 import api from '../../api';
 import Cart from './Cart';
@@ -16,6 +18,7 @@ const ProductPageComp = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [qty, setQty] = useState(1);
 
   const fetchProduct = () => {
     setLoading(true);
@@ -32,13 +35,14 @@ const ProductPageComp = () => {
   };
 
   useEffect(() => { fetchProduct(); }, [id]);
+  useEffect(() => { setQty(1); }, [id]);
 
   const { showAddedToCart } = useCartDrawer();
   const { t } = useLanguage();
 
   const handleAddToCart = () => {
     if (product) {
-      dispatch({ type: 'ADD_TO_CART', payload: product });
+      dispatch({ type: 'ADD_TO_CART', payload: { ...product, selectedQty: qty } });
       showAddedToCart();
     }
   };
@@ -133,12 +137,12 @@ const ProductPageComp = () => {
               {category}
             </Typography>
 
-            <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
+            <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
               <Typography sx={{ fontSize: '2rem', fontWeight: 700, color: 'primary.main' }}>
                 ₪{price}
               </Typography>
               <Chip
-                label={inStock ? 'במלאי' : 'אזל'}
+                label={inStock ? t('inStockStatus') : t('outOfStock')}
                 size="small"
                 sx={{
                   bgcolor: inStock ? 'success.light' : 'error.light',
@@ -147,6 +151,32 @@ const ProductPageComp = () => {
                 }}
               />
             </Stack>
+
+            <Typography variant="body2" color={inStock ? 'text.secondary' : 'error.main'} sx={{ mb: 2 }}>
+              {inStock ? t('stockCount', product.quantity) : t('outOfStockMsg')}
+            </Typography>
+
+            {inStock && (
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+                <IconButton
+                  size="small"
+                  onClick={() => setQty(q => Math.max(1, q - 1))}
+                  disabled={qty <= 1}
+                  aria-label={t('decreaseQty')}
+                >
+                  <RemoveIcon fontSize="small" />
+                </IconButton>
+                <Typography sx={{ minWidth: 32, textAlign: 'center', fontWeight: 600 }}>{qty}</Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => setQty(q => Math.min(product.quantity, q + 1))}
+                  disabled={qty >= product.quantity}
+                  aria-label={t('increaseQty')}
+                >
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </Stack>
+            )}
 
             {description && (
               <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -163,7 +193,7 @@ const ProductPageComp = () => {
                 disabled={!inStock}
                 onClick={handleAddToCart}
               >
-                הוסף לעגלה
+                {t('addToCart')}
               </Button>
             </Box>
           </Grid>
@@ -193,7 +223,7 @@ const ProductPageComp = () => {
           disabled={!inStock}
           onClick={handleAddToCart}
         >
-          הוסף לעגלה
+          {t('addToCart')}
         </Button>
       </Box>
     </>

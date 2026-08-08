@@ -13,6 +13,7 @@ import rtlPlugin from 'stylis-plugin-rtl';
 
 import reducer from './store/rootReducer.js';
 import { LanguageProvider, useLanguage } from './LanguageContext';
+import ScrollToTop from './componetns/ScrollToTop';
 import createAppTheme from './theme.js';
 
 const cacheRtl = createCache({ key: 'muirtl', stylisPlugins: [rtlPlugin] });
@@ -55,6 +56,7 @@ const ThemedApp = () => {
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <BrowserRouter>
+      <ScrollToTop />
       <LanguageProvider>
         <ThemedApp />
       </LanguageProvider>

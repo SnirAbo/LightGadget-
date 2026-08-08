@@ -60,6 +60,23 @@ const PaymentPage = () => {
     [e.target.name]: e.target.value,
   }));
 };
+  // Temporary bypass — Cardcom test credentials expired; wire the real provider here later.
+  const handlePayLater = async () => {
+    setValidationError('');
+    setOrderError('');
+    if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+      setValidationError(t('fillShippingDetails'));
+      return;
+    }
+    try {
+      await completeOrder();
+      dispatch({ type: 'CLEAR_CART' });
+      navigate('/account/orders');
+    } catch {
+      setOrderError(t('errorSubmittingOrder'));
+    }
+  };
+
    const handleCardcom = async () => {
     setValidationError('');
     setOrderError('');
@@ -75,42 +92,6 @@ const PaymentPage = () => {
       setOrderError(t('errorSubmittingOrder'));
     }
   }
-
-
-  // const handleBit = async () => {
-  //   setValidationError('');
-  //   setOrderError('');
-  //   if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
-  //     setValidationError(t('fillShippingDetails'));
-  //     return;
-  //   }
-  //   try {
-  //     await completeOrder();
-  //     dispatch({ type: 'CLEAR_CART' });
-  //     window.open(`https://pay.bit.co.il/pay?phoneNumber=0538280217&amount=${grandTotal}`, '_blank');
-  //     window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
-  //     navigate('/account/orders');
-  //   } catch {
-  //     setOrderError(t('errorSubmittingOrder'));
-  //   }
-  // };
-
-  // const handlePayLater = async () => {
-  //   setValidationError('');
-  //   setOrderError('');
-  //   if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
-  //     setValidationError(t('fillShippingDetails'));
-  //     return;
-  //   }
-  //   try {
-  //     await completeOrder();
-  //     dispatch({ type: 'CLEAR_CART' });
-  //     window.open(`https://wa.me/972538280217?text=${encodeURIComponent(buildWaText())}`, '_blank');
-  //     navigate('/account/orders');
-  //   } catch {
-  //     setOrderError(t('errorSubmittingOrder'));
-  //   }
-  // };
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', pt: 6, px: 2 }}>
@@ -261,9 +242,10 @@ const PaymentPage = () => {
           </Alert>
         )}
         <Stack spacing={1.5}>
+          {/* TODO: swap onClick back to handleCardcom once the new payment provider is integrated */}
           <Button
             variant="contained"
-            onClick={handleCardcom}
+            onClick={handlePayLater}
             fullWidth
             sx={{ backgroundColor: '#0080FF', py: 1.5, fontSize: 16, borderRadius: 2, '&:hover': { backgroundColor: '#0066CC' } }}
           >
