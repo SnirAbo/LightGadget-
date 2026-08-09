@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import storeInfo from '../storeInfo';
 
-const CLOSE_BTN_SIZE = 18; // px — tune to adjust badge diameter
+const CLOSE_BTN_SIZE = 18; 
 
 const WA_URL = `https://wa.me/${storeInfo.whatsapp}?text=${encodeURIComponent('שלום, אני מעוניין לשמוע על')}`;
 
