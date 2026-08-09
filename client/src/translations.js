@@ -140,6 +140,7 @@ const translations = {
     increaseQty: 'Increase quantity',
     cartEmpty: 'Your cart is empty',
     cartEmptySub: 'Add items to get started',
+    catalogStripText: 'Smart Lighting Accessories',
   },
   he: {
     address: 'כתובת',
@@ -257,7 +258,7 @@ const translations = {
     footerQuickLinks: 'קישורים מהירים',
     footerContactUs: 'צור קשר',
     footerWhatsapp: 'וואטסאפ',
-    landingHeroTitle: 'תאורה חכמה לבית שלך',
+    landingHeroTitle: 'אביזרי תאורה חכמה לבית שלך',
     landingHeroSub: 'תאורה חכמה, גאדג׳טים ואביזרים לבית המודרני',
     landingHeroCta: 'לקנייה עכשיו',
     landingTrustDelivery: 'משלוח מהיר',
@@ -282,6 +283,7 @@ const translations = {
     increaseQty: 'הגדל כמות',
     cartEmpty: 'העגלה ריקה',
     cartEmptySub: 'הוסף מוצרים כדי להתחיל',
+    catalogStripText: 'אביזרים לתאורה חכמה',
   },
 };
 
