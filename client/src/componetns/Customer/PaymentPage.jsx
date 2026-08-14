@@ -47,8 +47,8 @@ const PaymentPage = () => {
       price: product.price,
      quantity: product.quantity,
      })),
-    ...address,      
-    shippingCost,
+    ...address,
+    shippingOption,
     totalPrice: grandTotal,
     });
     return data;
@@ -60,24 +60,7 @@ const PaymentPage = () => {
     [e.target.name]: e.target.value,
   }));
 };
-  // Temporary bypass — Cardcom test credentials expired; wire the real provider here later.
-  const handlePayLater = async () => {
-    setValidationError('');
-    setOrderError('');
-    if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
-      setValidationError(t('fillShippingDetails'));
-      return;
-    }
-    try {
-      await completeOrder();
-      dispatch({ type: 'CLEAR_CART' });
-      navigate('/account/orders');
-    } catch {
-      setOrderError(t('errorSubmittingOrder'));
-    }
-  };
-
-   const handleCardcom = async () => {
+  const handleCardcom = async () => {
     setValidationError('');
     setOrderError('');
      if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
@@ -242,23 +225,14 @@ const PaymentPage = () => {
           </Alert>
         )}
         <Stack spacing={1.5}>
-          {/* TODO: swap onClick back to handleCardcom once the new payment provider is integrated */}
           <Button
             variant="contained"
-            onClick={handlePayLater}
+            onClick={handleCardcom}
             fullWidth
             sx={{ backgroundColor: '#0080FF', py: 1.5, fontSize: 16, borderRadius: 2, '&:hover': { backgroundColor: '#0066CC' } }}
           >
             שלם עכשיו
           </Button>
-          {/* <Button
-            variant="outlined"
-            onClick={}
-            fullWidth
-            sx={{ py: 1.5, fontSize: 16, borderRadius: 2, color: 'text.secondary', borderColor: 'divider', '&:hover': { borderColor: 'text.disabled', bgcolor: 'background.paper' } }}
-          >
-            אשלם מאוחר יותר
-          </Button> */}
         </Stack>
       </Box>
     </Box>

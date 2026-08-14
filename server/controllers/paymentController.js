@@ -2,6 +2,7 @@
 const express = require('express');
 const paymentService = require('../services/paymentService');
 const orderRepo = require('../repositories/orderRepo');
+const Product = require('../models/productModel');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -54,7 +55,23 @@ router.post('/webhook', async (req, res) => {
           transactionId: result.TranzactionId,
           paidAt: new Date(),
         });
-        console.log('UPDATED TO PAID'); 
+        console.log('UPDATED TO PAID');
+
+        // Decrement stock — runs only on the first 'paid' transition (idempotency guard above).
+        // Negative stock is allowed; it signals an oversell for manual review.
+        try {
+          await Product.bulkWrite(
+            order.items.map((item) => ({
+              updateOne: {
+                filter: { _id: item.product },
+                update: { $inc: { quantity: -item.quantity } },
+              },
+            }))
+          );
+        } catch (stockErr) {
+          // Payment already confirmed — log but do not re-throw.
+          console.error('Stock decrement failed for order', order._id, stockErr.message);
+        }
       }
     }
 

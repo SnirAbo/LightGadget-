@@ -7,8 +7,10 @@ const getByUser  = (user) => orderRepo.getByUser(user);
 const updateOrder = (id, obj) => orderRepo.updateOrder(id, obj);
 const deleteOrder = (id)      => orderRepo.deleteOrder(id);
 
+const SHIPPING_COST = 60;
+
 const addOrder = async (obj) => {
-  const { items, shippingCost, ...rest } = obj;
+  const { items, shippingOption, ...rest } = obj;
 
   // Fetch authoritative prices from DB — never trust client-supplied prices.
   const ids = items.map((i) => i.product);
@@ -29,7 +31,7 @@ const addOrder = async (obj) => {
   }
 
   const itemsTotal = authorizedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const cost = Number(shippingCost) >= 0 ? Number(shippingCost) : 0;
+  const cost = shippingOption === 'paid' ? SHIPPING_COST : 0;
 
   return orderRepo.addOrder({
     ...rest,
