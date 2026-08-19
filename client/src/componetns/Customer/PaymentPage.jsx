@@ -71,7 +71,7 @@ const PaymentPage = () => {
    try {
       const order = await completeOrder();
       const { data: payment } = await api.post(`/payments/create/${order._id}`, {
-        fullName: user.name,
+        fullName: `${user.firstName} ${user.lastName}`,
         phone: address.phoneNumber,
         email,
       });

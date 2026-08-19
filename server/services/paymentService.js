@@ -25,7 +25,7 @@ async function createPaymentPage(order, customer) {
 
   const { data } = await axios.post(`${I4U_BASE_URL}/ProcessApiRequestV2`, payload);
   console.log('INVOICE4U RAW RESPONSE:', JSON.stringify(data));
-  const result = data.ProcessApiRequestV2Result;
+  const result = data.d || data.ProcessApiRequestV2Result;
 
 
   if (!result || (result.Errors && result.Errors.length > 0)) {
@@ -50,7 +50,7 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
   };
 
   const { data } = await axios.post(`${I4U_BASE_URL}/GetClearingLogByParams`, payload);
-  const logs = data.GetClearingLogByParamsResult || [];
+  const logs = data.d || data.GetClearingLogByParamsResult || [];
 
   return logs.some(
     (log) =>
