@@ -54,7 +54,7 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
 
   try {
     const { data } = await axios.post(`${I4U_BASE_URL}/GetClearingLogByParams`, payload);
-    console.log('CLEARING LOGS RAW:', JSON.stringify(data));
+
     const logs = data.d || data.GetClearingLogByParamsResult || [];
     return logs.some(
       (log) =>
@@ -65,7 +65,6 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
     );
   } catch (err) {
     console.error('CLEARING LOGS ERROR STATUS:', err.response?.status);
-    console.error('CLEARING LOGS ERROR BODY:', JSON.stringify(err.response?.data));
     throw err;
   }
 }
