@@ -65,4 +65,5 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
         String(log.PaymentId) === String(paymentId))
   );
 }
+
 module.exports = { createPaymentPage, verifyClearing };

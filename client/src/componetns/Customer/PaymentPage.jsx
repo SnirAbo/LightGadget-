@@ -62,6 +62,7 @@ const PaymentPage = () => {
   }));
 };
   const handleCardcom = async () => {
+    console.log('USER:', user); 
     setValidationError('');
     setOrderError('');
      if (!address.address || !address.city || !address.postalCode || !address.phoneNumber || !email) {
