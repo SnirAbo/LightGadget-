@@ -39,8 +39,6 @@ async function createPaymentPage(order, customer) {
 async function verifyClearing({ clearingTraceId, paymentId }) {
   const now = new Date();
   const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-
-  // Format as "YYYY-MM-DDTHH:mm:ss" (no Z, no milliseconds) — matches invoice4u docs
   const fmt = (d) => d.toISOString().slice(0, 19);
 
   const payload = {
@@ -52,18 +50,23 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
     token: process.env.I4U_API_KEY,
   };
 
-  const { data } = await axios.post(`${I4U_BASE_URL}/GetClearingLogByParams`, payload);
-  console.log('CLEARING LOGS RAW:', JSON.stringify(data));  // זמני — ראה את המבנה
-
-  const logs = data.d || data.GetClearingLogByParamsResult || [];
-
-  return logs.some(
-    (log) =>
-      log.IsSuccess === true &&
-      log.IsCredit !== true &&
-      (String(log.ClearingTraceId) === String(clearingTraceId) ||
-        String(log.PaymentId) === String(paymentId))
-  );
+  try {
+    const { data } = await axios.post(`${I4U_BASE_URL}/GetClearingLogByParams`, payload);
+    console.log('CLEARING LOGS RAW:', JSON.stringify(data));
+    const logs = data.d || data.GetClearingLogByParamsResult || [];
+    return logs.some(
+      (log) =>
+        log.IsSuccess === true &&
+        log.IsCredit !== true &&
+        (String(log.ClearingTraceId) === String(clearingTraceId) ||
+          String(log.PaymentId) === String(paymentId))
+    );
+  } catch (err) {
+    // Show exactly what invoice4u returned on the 500
+    console.error('CLEARING LOGS ERROR STATUS:', err.response?.status);
+    console.error('CLEARING LOGS ERROR BODY:', JSON.stringify(err.response?.data));
+    throw err;
+  }
 }
 
 module.exports = { createPaymentPage, verifyClearing };
