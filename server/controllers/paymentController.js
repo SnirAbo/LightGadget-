@@ -1,4 +1,3 @@
-// server/controllers/paymentController.js
 const express = require('express');
 const paymentService = require('../services/paymentService');
 const orderRepo = require('../repositories/orderRepo');
@@ -7,26 +6,24 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-
 router.post('/create/:orderId', authMiddleware, async (req, res) => {
   try {
     const order = await orderRepo.getById(req.params.orderId);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-   
     const isOwner = String(order.user) === String(req.user.id);
     if (!isOwner && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
+    const customer = {
+      fullName: req.body.fullName,
+      phone: req.body.phone,
+      email: req.body.email,
+    };
 
-    const { url, lowProfileId } = await paymentService.createPaymentPage(order);
-
-
-    await orderRepo.updateOrder(order._id, { lowProfileId });
+    const { url, paymentId } = await paymentService.createPaymentPage(order, customer);
+    await orderRepo.updateOrder(order._id, { paymentId });
 
     res.json({ url });
   } catch (error) {
@@ -36,49 +33,46 @@ router.post('/create/:orderId', authMiddleware, async (req, res) => {
 
 router.post('/webhook', async (req, res) => {
   try {
-    console.log('WEBHOOK HIT');             
-    console.log('body:', req.body);  
+    const raw = req.body.Data;
+    const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
-    const { LowProfileId, ReturnValue } = req.body;
-    console.log('LowProfileId:', LowProfileId, 'ReturnValue:', ReturnValue);
+    const orderId = data.OrderIdClientUsage;
+    const clearingTraceId = data.ClearingTraceId;
+    const paymentId = data.PaymentId;
 
-    const result = await paymentService.verifyPayment(LowProfileId);
+    if (orderId) {
+      const verified = await paymentService.verifyClearing({ clearingTraceId, paymentId });
 
-    if (result.ResponseCode === 0) {
-      const order = await orderRepo.getById(ReturnValue);
-      console.log('order found:', order ? order._id : 'NULL', 'status:', order?.paymentStatus);  // 5
- 
+      if (verified) {
+        const order = await orderRepo.getById(orderId);
 
-      if (order && order.paymentStatus !== 'paid') {
-        await orderRepo.updateOrder(order._id, {
-          paymentStatus: 'paid',
-          transactionId: result.TranzactionId,
-          paidAt: new Date(),
-        });
-        console.log('UPDATED TO PAID');
+        if (order && order.paymentStatus !== 'paid') {
+          await orderRepo.updateOrder(order._id, {
+            paymentStatus: 'paid',
+            transactionId: paymentId,
+            paidAt: new Date(),
+          });
 
-        // Decrement stock — runs only on the first 'paid' transition (idempotency guard above).
-        // Negative stock is allowed; it signals an oversell for manual review.
-        try {
-          await Product.bulkWrite(
-            order.items.map((item) => ({
-              updateOne: {
-                filter: { _id: item.product },
-                update: { $inc: { quantity: -item.quantity } },
-              },
-            }))
-          );
-        } catch (stockErr) {
-          // Payment already confirmed — log but do not re-throw.
-          console.error('Stock decrement failed for order', order._id, stockErr.message);
+          try {
+            await Product.bulkWrite(
+              order.items.map((item) => ({
+                updateOne: {
+                  filter: { _id: item.product },
+                  update: { $inc: { quantity: -item.quantity } },
+                },
+              }))
+            );
+          } catch (stockErr) {
+            console.error('Stock decrement failed for order', order._id, stockErr.message);
+          }
         }
       }
     }
 
-    res.sendStatus(200);   
+    res.sendStatus(200);
   } catch (error) {
     console.error('Webhook error:', error.message);
-    res.sendStatus(200);   // גם על שגיאה
+    res.sendStatus(200);
   }
 });
 

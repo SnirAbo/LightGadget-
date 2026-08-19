@@ -1,43 +1,62 @@
 const axios = require('axios');
 
-const CARDCOM_CREATE_URL = 'https://secure.cardcom.solutions/api/v11/LowProfile/Create';
-const CARDCOM_RESULT_URL = 'https://secure.cardcom.solutions/api/v11/LowProfile/GetLpResult';
+const I4U_BASE_URL = process.env.I4U_BASE_URL;
+const CREDIT_CARD_COMPANY_TYPE = Number(process.env.I4U_CC_TYPE) || 15;
 
-async function createPaymentPage(order) {
+async function createPaymentPage(order, customer) {
   const payload = {
-    TerminalNumber: Number(process.env.CARDCOM_TERMINAL),
-    ApiName: process.env.CARDCOM_API_NAME,
-    Amount: order.totalPrice,
-    Operation: 'ChargeOnly',
-    ReturnValue: String(order._id),
-    SuccessRedirectUrl: `${process.env.CLIENT_URL}/payment/success`,
-    FailedRedirectUrl: `${process.env.CLIENT_URL}/payment/failed`,
-    WebHookUrl: `${process.env.SERVER_URL}/payments/webhook`,
+    request: {
+      Invoice4UUserApiKey: process.env.I4U_API_KEY,
+      Sum: order.totalPrice,
+      CreditCardCompanyType: CREDIT_CARD_COMPANY_TYPE,
+      Currency: 'NIS',
+      Type: 1,
+      FullName: customer.fullName,
+      Phone: customer.phone,
+      Email: customer.email,
+      Description: `הזמנה ${order._id}`,
+      OrderIdClientUsage: String(order._id),
+      ReturnUrl: `${process.env.CLIENT_URL}/payment/success`,
+      CallBackUrl: `${process.env.SERVER_URL}/payments/webhook`,
+      IsDocCreate: true,
+      IsQaMode: process.env.I4U_QA_MODE === 'true',
+    },
   };
 
-  const { data } = await axios.post(CARDCOM_CREATE_URL, payload);
+  const { data } = await axios.post(`${I4U_BASE_URL}/ProcessApiRequestV2`, payload);
+  const result = data.ProcessApiRequestV2Result;
 
-  if (data.ResponseCode !== 0) {
-    throw new Error(`Cardcom error: ${data.Description}`);
+  if (!result || (result.Errors && result.Errors.length > 0)) {
+    const msg = result?.Errors?.[0]?.Error || 'Unknown invoice4u error';
+    throw new Error(`invoice4u error: ${msg}`);
   }
 
-  return {
-    url: data.Url,
-    lowProfileId: data.LowProfileId,
-  };
+  return { url: result.ClearingRedirectUrl, paymentId: result.PaymentId };
 }
 
-async function verifyPayment(lowProfileId) {
+async function verifyClearing({ clearingTraceId, paymentId }) {
+  const now = new Date();
+  const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
   const payload = {
-    TerminalNumber: Number(process.env.CARDCOM_TERMINAL),
-    ApiName: process.env.CARDCOM_API_NAME,
-    ApiPassword: process.env.CARDCOM_API_PASSWORD,  
-    LowProfileId: lowProfileId,
+    searchParams: {
+      FromDate: from.toISOString(),
+      ToDate: now.toISOString(),
+      IsSuccess: true,
+    },
+    token: process.env.I4U_API_KEY,
   };
 
-  const { data } = await axios.post(CARDCOM_RESULT_URL, payload);
-  return data;   // מחזיר את כל התשובה — הבודק יחליט
+  const { data } = await axios.post(`${I4U_BASE_URL}/GetClearingLogByParams`, payload);
+  const logs = data.GetClearingLogByParamsResult || [];
+
+  return logs.some(
+    (log) =>
+      log.IsSuccess === true &&
+      log.IsCredit !== true &&
+      (String(log.ClearingTraceId) === String(clearingTraceId) ||
+        String(log.PaymentId) === String(paymentId))
+  );
 }
 
-
-module.exports = { createPaymentPage , verifyPayment };
+module.exports = { createPaymentPage, verifyClearing };

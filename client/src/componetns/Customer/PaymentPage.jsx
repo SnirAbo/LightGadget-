@@ -26,6 +26,7 @@ const PaymentPage = () => {
   const [shippingOption, setShippingOption] = useState(SHIPPING_FREE);
   const [validationError, setValidationError] = useState('');
   const [orderError, setOrderError] = useState('');
+  const [email, setEmail] = useState('');
 
   const itemsTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCost = shippingOption === SHIPPING_PAID ? SHIPPING_COST : 0;
@@ -63,13 +64,17 @@ const PaymentPage = () => {
   const handleCardcom = async () => {
     setValidationError('');
     setOrderError('');
-     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber) {
+     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber || !email) {
       setValidationError(t('fillShippingDetails'));
       return;
     }
    try {
       const order = await completeOrder();
-      const { data: payment } = await api.post(`/payments/create/${order._id}`);
+      const { data: payment } = await api.post(`/payments/create/${order._id}`, {
+        fullName: user.name,
+        phone: address.phoneNumber,
+        email,
+      });
        window.location.href = payment.url;
    }catch {
       setOrderError(t('errorSubmittingOrder'));
@@ -159,6 +164,18 @@ const PaymentPage = () => {
         name="phoneNumber"
         value={address.phoneNumber}
         onChange={handleAddressChange}
+        variant="outlined"
+        sx={{ width: '250px' }}
+      />
+    </Grid>
+
+    <Grid>
+      <TextField
+        label="אימייל לחשבונית"
+        name="email"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         variant="outlined"
         sx={{ width: '250px' }}
       />
