@@ -40,16 +40,21 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
   const now = new Date();
   const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
+  // Format as "YYYY-MM-DDTHH:mm:ss" (no Z, no milliseconds) — matches invoice4u docs
+  const fmt = (d) => d.toISOString().slice(0, 19);
+
   const payload = {
     searchParams: {
-      FromDate: from.toISOString(),
-      ToDate: now.toISOString(),
+      FromDate: fmt(from),
+      ToDate: fmt(now),
       IsSuccess: true,
     },
     token: process.env.I4U_API_KEY,
   };
 
   const { data } = await axios.post(`${I4U_BASE_URL}/GetClearingLogByParams`, payload);
+  console.log('CLEARING LOGS RAW:', JSON.stringify(data));  // זמני — ראה את המבנה
+
   const logs = data.d || data.GetClearingLogByParamsResult || [];
 
   return logs.some(
@@ -60,5 +65,4 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
         String(log.PaymentId) === String(paymentId))
   );
 }
-
 module.exports = { createPaymentPage, verifyClearing };
