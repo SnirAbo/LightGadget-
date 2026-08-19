@@ -24,7 +24,9 @@ async function createPaymentPage(order, customer) {
   };
 
   const { data } = await axios.post(`${I4U_BASE_URL}/ProcessApiRequestV2`, payload);
+  console.log('INVOICE4U RAW RESPONSE:', JSON.stringify(data));
   const result = data.ProcessApiRequestV2Result;
+
 
   if (!result || (result.Errors && result.Errors.length > 0)) {
     const msg = result?.Errors?.[0]?.Error || 'Unknown invoice4u error';
