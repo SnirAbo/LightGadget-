@@ -37,14 +37,16 @@ async function createPaymentPage(order, customer) {
 }
 
 async function verifyClearing({ clearingTraceId, paymentId }) {
-  const now = new Date();
-  const from = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  const fmt = (d) => d.toISOString().slice(0, 19);
+  const now = Date.now();
+  const from = now - 24 * 60 * 60 * 1000;
+
+  // WCF expects Microsoft JSON date format: /Date(milliseconds)/
+  const wcfDate = (ms) => `/Date(${ms})/`;
 
   const payload = {
     searchParams: {
-      FromDate: fmt(from),
-      ToDate: fmt(now),
+      FromDate: wcfDate(from),
+      ToDate: wcfDate(now),
       IsSuccess: true,
     },
     token: process.env.I4U_API_KEY,
@@ -62,7 +64,6 @@ async function verifyClearing({ clearingTraceId, paymentId }) {
           String(log.PaymentId) === String(paymentId))
     );
   } catch (err) {
-    // Show exactly what invoice4u returned on the 500
     console.error('CLEARING LOGS ERROR STATUS:', err.response?.status);
     console.error('CLEARING LOGS ERROR BODY:', JSON.stringify(err.response?.data));
     throw err;
