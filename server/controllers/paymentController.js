@@ -35,8 +35,7 @@ router.post('/webhook', async (req, res) => {
   try {
     const raw = req.body.Data;
     const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
-    console.log('WEBHOOK Data:', JSON.stringify(data));
-
+    
     const orderId = data.OrderIdClientUsage;
     const success = String(data.Success) === 'True';
 

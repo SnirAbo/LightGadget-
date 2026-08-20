@@ -24,7 +24,7 @@ async function createPaymentPage(order, customer) {
   };
 
   const { data } = await axios.post(`${I4U_BASE_URL}/ProcessApiRequestV2`, payload);
-  console.log('INVOICE4U RAW RESPONSE:', JSON.stringify(data));
+  
   const result = data.d || data.ProcessApiRequestV2Result;
 
 
