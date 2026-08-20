@@ -35,40 +35,33 @@ router.post('/webhook', async (req, res) => {
   try {
     const raw = req.body.Data;
     const data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    console.log('WEBHOOK Data:', JSON.stringify(data));
 
     const orderId = data.OrderIdClientUsage;
-    const clearingTraceId = data.ClearingTraceId;
-    const paymentId = data.PaymentId;
+    const success = String(data.Success) === 'True';
 
-    if (orderId) {
-      const verified = await paymentService.verifyClearing({ clearingTraceId, paymentId });
-
-      if (verified) {
-        const order = await orderRepo.getById(orderId);
-
-        if (order && order.paymentStatus !== 'paid') {
-          await orderRepo.updateOrder(order._id, {
-            paymentStatus: 'paid',
-            transactionId: paymentId,
-            paidAt: new Date(),
-          });
-
-          try {
-            await Product.bulkWrite(
-              order.items.map((item) => ({
-                updateOne: {
-                  filter: { _id: item.product },
-                  update: { $inc: { quantity: -item.quantity } },
-                },
-              }))
-            );
-          } catch (stockErr) {
-            console.error('Stock decrement failed for order', order._id, stockErr.message);
-          }
+    if (orderId && success) {
+      const order = await orderRepo.getById(orderId);
+      if (order && order.paymentStatus !== 'paid') {
+        await orderRepo.updateOrder(order._id, {
+          paymentStatus: 'paid',
+          transactionId: data.PaymentId,
+          paidAt: new Date(),
+        });
+        try {
+          await Product.bulkWrite(
+            order.items.map((item) => ({
+              updateOne: {
+                filter: { _id: item.product },
+                update: { $inc: { quantity: -item.quantity } },
+              },
+            }))
+          );
+        } catch (stockErr) {
+          console.error('Stock decrement failed:', order._id, stockErr.message);
         }
       }
     }
-
     res.sendStatus(200);
   } catch (error) {
     console.error('Webhook error:', error.message);
