@@ -62,9 +62,19 @@ const OrderManagerComp = () => {
                       {new Date(order.createdAt).toLocaleDateString('he-IL')}
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {order.user
-                        ? `${order.user.firstName} ${order.user.lastName}`
-                        : '—'}
+                      {order.user ? (
+                        <>
+                          <Typography variant="body2">{order.user.firstName} {order.user.lastName}</Typography>
+                          <Typography variant="caption" color="text.secondary">{order.user.email}</Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Typography variant="body2">{order.guestName || '—'}</Typography>
+                          {order.guestEmail && (
+                            <Typography variant="caption" color="text.secondary">{order.guestEmail}</Typography>
+                          )}
+                        </>
+                      )}
                     </TableCell>
                     <TableCell>
                       {order.items?.map((item, i) => (

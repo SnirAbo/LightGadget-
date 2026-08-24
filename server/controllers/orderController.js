@@ -1,6 +1,8 @@
 const express = require('express');
+const crypto = require('crypto');
 const orderService = require('../services/orderService');
 const authMiddleware = require('../middleware/authMiddleware');
+const optionalAuth = require('../middleware/optionalAuth');
 
 const router = express.Router();
 
@@ -27,11 +29,20 @@ router.get('/', authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', optionalAuth, async (req, res) => {
   try {
-    // user must come from the verified token, not the request body
-    const result = await orderService.addOrder({ ...req.body, user: req.user.id });
-    res.status(201).json(result);
+    if (req.user) {
+      // Registered user — user id comes from the token, never the body
+      const result = await orderService.addOrder({ ...req.body, user: req.user.id });
+      res.status(201).json(result);
+    } else {
+      // Guest — generate a one-time secret to authorize the payment step
+      const guestToken = crypto.randomUUID();
+      const { guestName, guestEmail, ...rest } = req.body;
+      const result = await orderService.addOrder({ ...rest, guestToken, guestName, guestEmail });
+      // guestToken is present on the saved doc and returned here (select:false only hides it from queries)
+      res.status(201).json(result);
+    }
   } catch (error) {
     res.status(500).json(error.message);
   }

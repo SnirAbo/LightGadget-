@@ -3,17 +3,27 @@ const paymentService = require('../services/paymentService');
 const orderRepo = require('../repositories/orderRepo');
 const Product = require('../models/productModel');
 const authMiddleware = require('../middleware/authMiddleware');
+const optionalAuth = require('../middleware/optionalAuth');
 
 const router = express.Router();
 
-router.post('/create/:orderId', authMiddleware, async (req, res) => {
+router.post('/create/:orderId', optionalAuth, async (req, res) => {
   try {
-    const order = await orderRepo.getById(req.params.orderId);
+    const order = await orderRepo.getByIdWithToken(req.params.orderId);
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    const isOwner = String(order.user) === String(req.user.id);
-    if (!isOwner && req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Forbidden' });
+    if (req.user) {
+      // Registered user path — ownership check unchanged
+      const isOwner = String(order.user) === String(req.user.id);
+      if (!isOwner && req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+    } else {
+      // Guest path — validate the one-time token returned at order creation
+      const { guestToken } = req.body;
+      if (!guestToken || guestToken !== order.guestToken) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
     }
 
     const customer = {

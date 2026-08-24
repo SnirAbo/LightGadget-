@@ -2,9 +2,10 @@ const Order = require('../models/orderModel');
 
 const getAllOrders = () => Order.find().populate('user', 'firstName lastName email');
 const getById = (id) => Order.findById(id);
+const getByIdWithToken = (id) => Order.findById(id).select('+guestToken');
 const getByUser = (user) => Order.find({ user });
 const addOrder = (obj) => new Order(obj).save();
 const updateOrder = (id, obj) => Order.findByIdAndUpdate(id, { $set: obj }, { new: true });
 const deleteOrder = (id) => Order.findByIdAndDelete(id);
 
-module.exports = { getAllOrders, getById, getByUser, addOrder, updateOrder, deleteOrder };
+module.exports = { getAllOrders, getById, getByIdWithToken, getByUser, addOrder, updateOrder, deleteOrder };

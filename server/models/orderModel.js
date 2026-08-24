@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema(
   {
-    user : { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    guestToken: { type: String, select: false },  // never serialized by queries; only returned at creation
+    guestName:  { type: String },
+    guestEmail: { type: String },
     items: [
       {
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },

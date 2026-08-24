@@ -27,31 +27,37 @@ const PaymentPage = () => {
   const [validationError, setValidationError] = useState('');
   const [orderError, setOrderError] = useState('');
   const [email, setEmail] = useState('');
+  const [guestName, setGuestName] = useState('');
 
   const itemsTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCost = shippingOption === SHIPPING_PAID ? SHIPPING_COST : 0;
   const grandTotal = itemsTotal + shippingCost;
 
   useEffect(() => {
-    if (!user) navigate('/login');
-    else if (cart.length === 0) navigate('/');
+    if (cart.length === 0) navigate('/');
   }, []);
 
-  if (!user || cart.length === 0) return null;
+  if (cart.length === 0) return null;
 
   const completeOrder = async () => {
-   const { data } = await api.post('/orders', {
-      user: user._id,
+    const body = {
       items: cart.map((product) => ({
-      product: product._id,
-      title: product.title,
-      price: product.price,
-     quantity: product.quantity,
-     })),
-    ...address,
-    shippingOption,
-    totalPrice: grandTotal,
-    });
+        product: product._id,
+        title: product.title,
+        price: product.price,
+        quantity: product.quantity,
+      })),
+      ...address,
+      shippingOption,
+      totalPrice: grandTotal,
+    };
+    if (user) {
+      body.user = user._id;
+    } else {
+      body.guestName = guestName;
+      body.guestEmail = email;
+    }
+    const { data } = await api.post('/orders', body);
     return data;
   };
 
@@ -62,25 +68,25 @@ const PaymentPage = () => {
   }));
 };
   const handleCardcom = async () => {
-    console.log('USER:', user); 
     setValidationError('');
     setOrderError('');
-     if (!address.address || !address.city || !address.postalCode || !address.phoneNumber || !email) {
+    const baseRequired = [address.address, address.city, address.postalCode, address.phoneNumber, email];
+    const allRequired = user ? baseRequired : [...baseRequired, guestName];
+    if (allRequired.some((f) => !f)) {
       setValidationError(t('fillShippingDetails'));
       return;
     }
-   try {
+    try {
       const order = await completeOrder();
-      const { data: payment } = await api.post(`/payments/create/${order._id}`, {
-        fullName: `${user.firstName} ${user.lastName}`,
-        phone: address.phoneNumber,
-        email,
-      });
-       window.location.href = payment.url;
-   }catch {
+      const fullName = user ? `${user.firstName} ${user.lastName}` : guestName;
+      const paymentBody = { fullName, phone: address.phoneNumber, email };
+      if (!user) paymentBody.guestToken = order.guestToken;
+      const { data: payment } = await api.post(`/payments/create/${order._id}`, paymentBody);
+      window.location.href = payment.url;
+    } catch {
       setOrderError(t('errorSubmittingOrder'));
     }
-  }
+  };
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', pt: 6, px: 2 }}>
@@ -181,6 +187,19 @@ const PaymentPage = () => {
         sx={{ width: '250px' }}
       />
     </Grid>
+
+    {!user && (
+      <Grid>
+        <TextField
+          label={t('fullName')}
+          name="guestName"
+          value={guestName}
+          onChange={(e) => setGuestName(e.target.value)}
+          variant="outlined"
+          sx={{ width: '250px' }}
+        />
+      </Grid>
+    )}
   </Grid>
   {/* </form> */}
           <ToggleButtonGroup
