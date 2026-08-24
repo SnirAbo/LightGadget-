@@ -31,11 +31,6 @@ const Cart = () => {
 
   const handleOrder = () => {
     if (cart.length === 0) return;
-    if (!user) {
-      setCartOpen(false);
-      navigate('/login');
-      return;
-    }
     setCartOpen(false);
     navigate('/payment');
   };

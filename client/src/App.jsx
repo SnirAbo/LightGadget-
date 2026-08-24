@@ -62,10 +62,11 @@ function App() {
         <Route path='orders' element={<MyOrders />} />
         <Route path='products' element= {<ProductCatalog />} />
       </Route>
-      <Route path='/payment' element={<PaymentPage />} />
-      <Route path='/payment/success' element={<PaymentSuccess />} />
-      <Route path='/payment/failed' element={<PaymentFailed />} />
     </Route>
+
+    <Route path='/payment' element={<PaymentPage />} />
+    <Route path='/payment/success' element={<PaymentSuccess />} />
+    <Route path='/payment/failed' element={<PaymentFailed />} />
 
     </Routes>
     <Footer />
