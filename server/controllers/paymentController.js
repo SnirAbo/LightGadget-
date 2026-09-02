@@ -2,8 +2,10 @@ const express = require('express');
 const paymentService = require('../services/paymentService');
 const orderRepo = require('../repositories/orderRepo');
 const Product = require('../models/productModel');
+const User = require('../models/userModel');
 const authMiddleware = require('../middleware/authMiddleware');
 const optionalAuth = require('../middleware/optionalAuth');
+const notificationService = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -68,6 +70,18 @@ router.post('/webhook', async (req, res) => {
           );
         } catch (stockErr) {
           console.error('Stock decrement failed:', order._id, stockErr.message);
+        }
+        try {
+          let customer;
+          if (order.guestEmail) {
+            customer = { name: order.guestName, email: order.guestEmail };
+          } else {
+            const u = await User.findById(order.user).select('firstName lastName email');
+            customer = { name: `${u.firstName} ${u.lastName}`, email: u.email };
+          }
+          await notificationService.sendOrderEmails(order, customer);
+        } catch (notifyErr) {
+          console.error('Notification failed:', order._id, notifyErr.message);
         }
       }
     }
